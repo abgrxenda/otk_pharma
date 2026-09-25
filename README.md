@@ -4,7 +4,7 @@ Onboard partner pharmacies, control restricted items, sell kits and keep drug da
 product, all inside Odoo. Install one module and get the whole suite.
 
 ![Odoo Version](https://img.shields.io/badge/Odoo-18.0-blue)
-![License](https://img.shields.io/badge/license-LGPL--3-green)
+![License](https://img.shields.io/badge/license-OPL--1-blue)
 ![Python](https://img.shields.io/badge/Python-3-yellow?logo=python&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?logo=postgresql&logoColor=white)
 ![Status](https://img.shields.io/badge/status-in%20development-yellow)
@@ -129,7 +129,9 @@ README.md
 
 ## 📝 License
 
-LGPL-3. See the `license` key in each module's `__manifest__.py`.
+**Pharma B2B Suite** (`otk_pharma`) is licensed under OPL-1 (Odoo Proprietary License v1.0) and sold on the
+Odoo Apps store for USD 150 (one-time purchase). The other modules in this repository are listed with
+their own license in each module's `__manifest__.py` (`license` key).
 
 ## 👤 Author and support
 
