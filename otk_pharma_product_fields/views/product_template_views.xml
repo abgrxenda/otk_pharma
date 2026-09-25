@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ══ Add pharmacy fields tab to product form ══ -->
+    <record id="view_product_template_otk_pharma_fields" model="ir.ui.view">
+        <field name="name">product.template.otk.pharma.fields</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view"/>
+        <field name="arch" type="xml">
+
+            <!-- Add the Pharmacy Fields tab after existing tabs -->
+            <xpath expr="//page[@name='general_information']" position="after">
+                <page string="Pharmacy Fields" name="otk_pharma_fields">
+
+                    <!-- Regulatory Information -->
+                    <group string="Regulatory Information">
+                        <group>
+                            <field name="x_din"/>
+                            <field name="x_generic_name"/>
+                            <field name="x_brand_name"/>
+                            <field name="x_schedule_category"/>
+                        </group>
+                        <group>
+                            <field name="x_manufacturer_code"/>
+                            <field name="x_tier"/>
+                        </group>
+                    </group>
+
+                    <!-- Pricing Information -->
+                    <group string="Pricing">
+                        <group>
+                            <field name="x_mlp"/>
+                            <field name="x_lcap"/>
+                        </group>
+                        <group>
+                            <!-- Spacer or additional pricing fields -->
+                        </group>
+                    </group>
+
+                </page>
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>

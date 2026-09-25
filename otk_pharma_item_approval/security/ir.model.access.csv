@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_otk_pharma_item_approval_admin,otk.pharma.item.approval admin,model_otk_pharma_item_approval,base.group_user,1,1,1,1
+access_otk_pharma_item_approval_portal,otk.pharma.item.approval portal,model_otk_pharma_item_approval,base.group_portal,1,0,0,0
+access_sale_order_prescription_upload_admin,sale.order.prescription.upload admin,model_sale_order_prescription_upload,base.group_user,1,1,1,1
+access_sale_order_prescription_upload_portal,sale.order.prescription.upload portal,model_sale_order_prescription_upload,base.group_portal,1,1,1,0

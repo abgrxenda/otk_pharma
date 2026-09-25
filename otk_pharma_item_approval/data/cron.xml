@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- otk_pharma_item_approval/data/cron.xml -->
+<odoo>
+
+    <record id="ir_cron_expire_approvals" model="ir.cron">
+        <field name="name">Pharma: Expire Pending Approval Auth Codes</field>
+        <field name="model_id" ref="otk_pharma_item_approval.model_otk_pharma_item_approval"/>
+        <field name="state">code</field>
+        <field name="code">model.action_expire_pending()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">hours</field>
+        <field name="active">True</field>
+    </record>
+
+</odoo>

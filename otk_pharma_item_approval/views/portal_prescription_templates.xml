@@ -1,0 +1,273 @@
+<!-- ══ Prescription Upload Portal Templates ════════════════════════════════ -->
+<odoo>
+
+<!-- ══ 1. Prescription Upload Page ═══════════════════════════════════════════ -->
+<template id="portal_order_prescription"
+          name="Pharma: Prescription Upload">
+    <t t-call="portal.portal_layout">
+        <t t-set="breadcrumbs_searchbar" t-value="False"/>
+
+        <div class="container mt-4 mb-5">
+
+                <!-- Breadcrumb -->
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a href="/my/orders">My Orders</a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <a t-attf-href="/my/orders/{{ order.id }}">
+                                Order #<t t-esc="order.name"/>
+                            </a>
+                        </li>
+                        <li class="breadcrumb-item active">Upload Prescriptions</li>
+                    </ol>
+                </nav>
+
+                <div class="row justify-content-center">
+                    <div class="col-md-8">
+
+                        <!-- Page Title -->
+                        <h2 class="mb-1">Prescription Upload Required</h2>
+                        <p class="text-muted mb-4">
+                            Your order contains items that require a valid
+                            prescription. Please upload a prescription document
+                            for each item listed below before proceeding.
+                        </p>
+
+                        <!-- Order Summary Card -->
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <h6 class="card-title text-muted mb-3">Order Summary</h6>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <small class="text-muted">Order</small>
+                                        <p class="mb-1 fw-bold">
+                                            <t t-esc="order.name"/>
+                                        </p>
+                                    </div>
+                                    <div class="col-6 d-none">
+                                        <small class="text-muted">Total</small>
+                                        <p class="mb-1 fw-bold">
+                                            <t t-esc="order.currency_id.symbol"/>
+                                            <t t-esc="'%.2f' % order.amount_total"/>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Error Alert -->
+                        <div t-if="error"
+                             class="alert alert-danger"
+                             role="alert">
+                            <t t-esc="error"/>
+                        </div>
+
+                        <!-- Success Alert -->
+                        <div t-if="success"
+                             class="alert alert-success"
+                             role="alert">
+                            <t t-esc="success"/>
+                        </div>
+
+                        <!-- Upload Form -->
+                        <form t-attf-action="/pharmacy/order/{{ order.id }}/prescription"
+                              method="post"
+                              enctype="multipart/form-data">
+                            <input type="hidden"
+                                   name="csrf_token"
+                                   t-att-value="request.csrf_token()"/>
+
+                            <div class="mb-4">
+                                <h5 class="mb-3">Required Prescriptions</h5>
+
+                                <t t-foreach="prescription_lines"
+                                   t-as="line"
+                                   t-key="line.id">
+                                    <div class="card mb-3">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                                <div>
+                                                    <h6 class="mb-1">
+                                                        <t t-esc="line.product_id.display_name"/>
+                                                    </h6>
+                                                </div>
+                                                <span t-if="line.state == 'uploaded'"
+                                                      class="badge bg-success">
+                                                    Uploaded
+                                                </span>
+                                                <span t-elif="line.state == 'pending'"
+                                                      class="badge bg-warning">
+                                                    Pending
+                                                </span>
+                                            </div>
+
+                                            <div class="mb-2">
+                                                <label t-attf-for="prescription_{{ line.id }}"
+                                                       class="form-label fw-bold">
+                                                    <t t-if="line.state == 'uploaded'">
+                                                        Current File:
+                                                        <span class="text-muted">
+                                                            <t t-esc="line.prescription_filename or 'prescription file'"/>
+                                                        </span>
+                                                        <span class="text-muted ms-2">
+                                                            (upload a new file to replace it)
+                                                        </span>
+                                                    </t>
+                                                    <t t-else="">
+                                                        Upload Prescription File *
+                                                    </t>
+                                                </label>
+                                                <input type="file"
+                                                       t-attf-id="prescription_{{ line.id }}"
+                                                       t-attf-name="prescription_{{ line.id }}"
+                                                       class="form-control"
+                                                       accept=".pdf,.jpg,.jpeg,.png,.gif,.tiff,.bmp"/>
+                                                <div class="form-text">
+                                                    Accepted formats: PDF, JPG, PNG, GIF, TIFF, BMP
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </t>
+                            </div>
+
+                            <div class="d-grid gap-2">
+                                <button type="submit"
+                                        class="btn btn-primary btn-lg">
+                                    Upload Prescriptions
+                                </button>
+                            </div>
+                        </form>
+
+                        <!-- Next Steps Info -->
+                        <div class="card mt-4 bg-light">
+                            <div class="card-body">
+                                <h6 class="mb-2">What happens next?</h6>
+                                <ul class="mb-0 text-muted">
+                                    <li>After uploading all prescriptions, your order will proceed to the next step.</li>
+                                    <li t-if="has_approval_items">
+                                        If your order also contains controlled items, you will then need to enter an authorisation code sent to your email.
+                                    </li>
+                                    <li>
+                                        You can save this page and come back later - your order will remain pending until all prescriptions are uploaded.
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 text-center">
+                            <a t-attf-href="/my/orders/{{ order.id }}"
+                               class="text-muted">
+                                ← Back to Order
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
+        </div>
+        </t>
+    </template>
+
+
+<!-- ══ 2. Pending Prescription Uploads list page ═══════════════════════════ -->
+<template id="portal_prescription_uploads"
+          name="Pharma: Pending Prescription Uploads">
+    <t t-call="portal.portal_layout">
+        <t t-set="breadcrumbs_searchbar" t-value="False"/>
+        <t t-call="portal.portal_searchbar">
+            <t t-set="title">Prescription Uploads</t>
+        </t>
+
+        <div t-if="not orders"
+             class="alert alert-info"
+             role="alert">
+            You have no orders requiring prescription uploads at this time.
+        </div>
+
+        <t t-if="orders" t-call="portal.portal_table">
+            <thead>
+                <tr>
+                    <th>Order #</th>
+                    <th>Date</th>
+                    <th>Prescriptions Needed</th>
+                    <th class="text-end d-none">Total</th>
+                    <th class="text-end">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr t-foreach="orders"
+                    t-as="order"
+                    t-key="order.id">
+                    <td>
+                        <a t-att-href="order.get_portal_url()"
+                           t-esc="order.name"/>
+                    </td>
+                    <td>
+                        <span t-field="order.date_order"
+                              t-options='{"widget": "date"}'/>
+                    </td>
+                    <td>
+                        <t t-esc="order.x_prescription_uploaded_count"/>
+                        / <t t-esc="order.x_prescription_required_count"/>
+                        uploaded
+                    </td>
+                    <td class="text-end d-none">
+                        <span t-field="order.amount_total"/>
+                    </td>
+                    <td class="text-end">
+                        <a t-attf-href="/pharmacy/order/{{ order.id }}/prescription"
+                           class="btn btn-sm btn-warning">
+                            Upload →
+                        </a>
+                    </td>
+                </tr>
+            </tbody>
+        </t>
+    </t>
+</template>
+
+
+<!-- ══ 3. Banner on native order detail page for pending_prescription ══════ -->
+<template id="portal_order_prescription_banner"
+          inherit_id="sale.sale_order_portal_template"
+          name="Pharma: Pending Prescription Banner">
+    <xpath expr="//div[hasclass('o_portal_sidebar')]" position="before">
+        <t t-if="sale_order.state == 'pending_prescription'">
+            <div class="alert alert-info text-center mb-0">
+                <strong>📋 Prescription Required</strong>
+                This order contains items that require a prescription upload.
+                <a t-attf-href="/pharmacy/order/{{ sale_order.id }}/prescription"
+                   class="alert-link ms-2">
+                    Upload Prescriptions →
+                </a>
+            </div>
+        </t>
+    </xpath>
+</template>
+
+
+<!-- ══ 4. Add Pending Prescription Uploads card to My Account page ════════ -->
+<template id="portal_my_home_prescription_uploads"
+          name="Prescription Uploads"
+          inherit_id="sale.portal_my_home_sale"
+          customize_show="True"
+          active="True"
+          priority="20">
+    <div id="portal_client_category" position="inside">
+        <t t-call="portal.portal_docs_entry">
+            <t t-set="icon"
+               t-value="'/sale/static/src/img/bag.svg'"/>
+            <t t-set="title">Prescription Uploads</t>
+            <t t-set="text">Orders requiring prescription upload</t>
+            <t t-set="url"
+               t-value="'/my/prescription-uploads'"/>
+            <t t-set="placeholder_count"
+               t-value="'pending_prescription_count'"/>
+            <t t-set="config_card" t-value="True"/>
+        </t>
+    </div>
+</template>
+
+</odoo>

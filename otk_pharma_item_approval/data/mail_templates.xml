@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- otk_pharma_item_approval/data/mail_templates.xml -->
+<odoo>
+
+    <!-- ══ Template 1: Notify admin that an approval request is waiting ══════ -->
+    <record id="email_template_approval_request" model="mail.template">
+        <field name="name">Pharma: Approval Request - Admin Notification</field>
+        <field name="model_id" ref="sale.model_sale_order"/>
+        <field name="subject">Action Required: Order #{{ object.name }} Requires Approval</field>
+        <field name="email_from">{{ (object.company_id.email or user.email) }}</field>
+        <field name="email_to">{{ object.company_id.email or user.email }}</field>
+        <field name="body_html"><![CDATA[
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                <h2 style="color: #1a3c5e;">Approval Required</h2>
+                <p>A new order has been placed containing one or more controlled items
+                and requires your review before it can be confirmed.</p>
+
+                <table style="width:100%; border-collapse:collapse; margin: 20px 0;">
+                    <tr style="background:#f0f4f8;">
+                        <td style="padding:8px 12px; font-weight:bold;">Order</td>
+                        <td style="padding:8px 12px;">{{ object.name }}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:8px 12px; font-weight:bold;">Pharmacy</td>
+                        <td style="padding:8px 12px;">{{ object.partner_id.name }}</td>
+                    </tr>
+                    <tr style="background:#f0f4f8;">
+                        <td style="padding:8px 12px; font-weight:bold;">Order Total</td>
+                        <td style="padding:8px 12px;">{{ object.currency_id.symbol }}{{ '%.2f' % object.amount_total }}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:8px 12px; font-weight:bold;">Controlled Items</td>
+                        <td style="padding:8px 12px;">{{ object.x_approval_id.controlled_item_names }}</td>
+                    </tr>
+                </table>
+
+                <p>Log in to the backend to review and approve or reject this order.</p>
+
+                <a href="{{ object.get_base_url() }}/odoo/sales/{{ object.id }}"
+                   style="display:inline-block; padding:10px 20px; background:#1a3c5e;
+                          color:#ffffff; text-decoration:none; border-radius:4px;">
+                    Review Order
+                </a>
+            </div>
+        ]]></field>
+    </record>
+
+    <!-- ══ Template 2: Send auth code to the small pharmacy ═════════════════ -->
+    <!--
+        IMPORTANT: This template is sent via:
+            template.with_context(auth_code=plaintext_code).send_mail(self.id, ...)
+        where self is a otk.pharma.item.approval record.
+        So object = otk.pharma.item.approval instance.
+    -->
+    <record id="email_template_auth_code" model="mail.template">
+        <field name="name">Pharma: Approval Auth Code - Pharmacy Notification</field>
+        <field name="model_id" ref="otk_pharma_item_approval.model_otk_pharma_item_approval"/>
+        <field name="subject">Your Authorisation Code for Order #{{ object.order_id.name }}</field>
+        <field name="email_from">{{ (object.order_id.company_id.email or user.email) }}</field>
+        <field name="email_to">{{ object.partner_id.email }}</field>
+        <field name="body_html"><![CDATA[
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                <h2 style="color: #1a3c5e;">Your Order Has Been Approved</h2>
+                <p>Your order has been reviewed and approved. Use the authorisation
+                code below to confirm your order.</p>
+
+                <div style="text-align:center; margin: 30px 0;">
+                    <div style="display:inline-block; padding:20px 40px;
+                                background:#f0f4f8; border:2px solid #1a3c5e;
+                                border-radius:8px;">
+                        <p style="margin:0 0 8px 0; color:#666; font-size:13px;">
+                            AUTHORISATION CODE
+                        </p>
+                        <p style="margin:0; font-size:36px; font-weight:bold;
+                                  letter-spacing:8px; color:#1a3c5e;">
+                            {{ object.auth_code_plain }}
+                        </p>
+                    </div>
+                </div>
+
+                <p style="color:#e74c3c; font-size:13px;">
+                    ⚠ This code expires in 24 hours and can only be used once.
+                </p>
+
+                <table style="width:100%; border-collapse:collapse; margin: 20px 0;">
+                    <tr style="background:#f0f4f8;">
+                        <td style="padding:8px 12px; font-weight:bold;">Order</td>
+                        <td style="padding:8px 12px;">{{ object.order_id.name }}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:8px 12px; font-weight:bold;">Controlled Items</td>
+                        <td style="padding:8px 12px;">{{ object.controlled_item_names }}</td>
+                    </tr>
+                    <tr style="background:#f0f4f8;">
+                        <td style="padding:8px 12px; font-weight:bold;">Code Expires</td>
+                        <td style="padding:8px 12px;">{{ object.expiry_date }}</td>
+                    </tr>
+                </table>
+
+                <a href="{{ object.order_id.get_base_url() }}/pharmacy/order/{{ object.order_id.id }}/approve"
+                   style="display:inline-block; padding:10px 20px; background:#1a3c5e;
+                          color:#ffffff; text-decoration:none; border-radius:4px;">
+                    Enter Code &amp; Confirm Order
+                </a>
+            </div>
+        ]]></field>
+    </record>
+
+    <!-- ══ Template 3: Notify pharmacy their order was rejected ═════════════ -->
+    <record id="email_template_approval_rejected" model="mail.template">
+        <field name="name">Pharma: Approval Rejected - Pharmacy Notification</field>
+        <field name="model_id" ref="otk_pharma_item_approval.model_otk_pharma_item_approval"/>
+        <field name="subject">Update on Your Order #{{ object.order_id.name }}</field>
+        <field name="email_from">{{ (object.order_id.company_id.email or user.email) }}</field>
+        <field name="email_to">{{ object.partner_id.email }}</field>
+        <field name="body_html"><![CDATA[
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                <h2 style="color: #c0392b;">Order Not Approved</h2>
+                <p>After review, we are unable to approve your order at this time.</p>
+
+                <table style="width:100%; border-collapse:collapse; margin: 20px 0;">
+                    <tr style="background:#f0f4f8;">
+                        <td style="padding:8px 12px; font-weight:bold;">Order</td>
+                        <td style="padding:8px 12px;">{{ object.order_id.name }}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:8px 12px; font-weight:bold;">Reason</td>
+                        <td style="padding:8px 12px;">
+                            {{ object.rejection_reason or 'Please contact us for more information.' }}
+                        </td>
+                    </tr>
+                </table>
+
+                <p>Your order has been returned to draft. You may log in to your
+                account to modify or cancel it.</p>
+
+                <a href="{{ object.order_id.get_base_url() }}/my/orders/{{ object.order_id.id }}"
+                   style="display:inline-block; padding:10px 20px; background:#1a3c5e;
+                          color:#ffffff; text-decoration:none; border-radius:4px;">
+                    View Order
+                </a>
+
+                <p style="margin-top:30px; color:#666; font-size:13px;">
+                    If you have questions, please contact us directly.
+                </p>
+            </div>
+        ]]></field>
+    </record>
+
+</odoo>

@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_otk_pharma_bom_admin,otk.pharma.bom admin,model_otk_pharma_bom,base.group_system,1,1,1,1
+access_otk_pharma_bom_user,otk.pharma.bom user,model_otk_pharma_bom,base.group_user,1,1,1,0
+access_otk_pharma_bom_line_admin,otk.pharma.bom.line admin,model_otk_pharma_bom_line,base.group_system,1,1,1,1
+access_otk_pharma_bom_line_user,otk.pharma.bom.line user,model_otk_pharma_bom_line,base.group_user,1,1,1,0

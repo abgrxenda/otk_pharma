@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- otk_pharma_item_approval/views/portal_templates.xml -->
+<odoo>
+
+    <!-- ══ 1. Auth Code Entry Page ═══════════════════════════════════════ -->
+    <template id="portal_order_approve" name="Pharma: Order Approval Auth Code Entry">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="False"/>
+
+            <div class="container mt-4 mb-5">
+
+                    <!-- Breadcrumb -->
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item">
+                                <a href="/my/orders">My Orders</a>
+                            </li>
+                            <li class="breadcrumb-item">
+                                <a t-attf-href="/my/orders/{{ order.id }}">
+                                    Order #<t t-esc="order.name"/>
+                                </a>
+                            </li>
+                            <li class="breadcrumb-item active">Enter Authorisation Code</li>
+                        </ol>
+                    </nav>
+
+                    <div class="row justify-content-center">
+                        <div class="col-md-6">
+
+                            <!-- Page Title -->
+                            <h2 class="mb-1">Authorisation Required</h2>
+                            <p class="text-muted mb-4">
+                                Your order contains controlled items and has been
+                                approved. Enter the 6-digit authorisation code
+                                sent to your email to confirm the order.
+                            </p>
+
+                            <!-- Order Summary Card -->
+                            <div class="card mb-4">
+                                <div class="card-body">
+                                    <h6 class="card-title text-muted mb-3">Order Summary</h6>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <small class="text-muted">Order</small>
+                                            <p class="mb-1 fw-bold">
+                                                <t t-esc="order.name"/>
+                                            </p>
+                                        </div>
+                                        <div class="col-6 d-none">
+                                            <small class="text-muted">Total</small>
+                                            <p class="mb-1 fw-bold">
+                                                <t t-esc="order.currency_id.symbol"/>
+                                                <t t-esc="'%.2f' % order.amount_total"/>
+                                            </p>
+                                        </div>
+                                        <div class="col-12 mt-2">
+                                            <small class="text-muted">Controlled Items</small>
+                                            <p class="mb-0">
+                                                <t t-esc="approval.controlled_item_names"/>
+                                            </p>
+                                        </div>
+                                        <div class="col-12 mt-2"
+                                             t-if="approval.expiry_date">
+                                            <small class="text-muted">Code Expires</small>
+                                            <p class="mb-0 text-warning">
+                                                <t t-esc="approval.expiry_date"/>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Error Alert -->
+                            <div t-if="error" class="alert alert-danger" role="alert">
+                                <t t-esc="error"/>
+                            </div>
+
+                            <!-- Expired / Rejected State Messages -->
+                            <t t-if="approval.state == 'expired'">
+                                <div class="alert alert-warning">
+                                    <strong>Code Expired</strong><br/>
+                                    This authorisation code has expired.
+                                    Please contact the pharmacy to request a new one.
+                                </div>
+                            </t>
+
+                            <t t-elif="approval.state == 'rejected'">
+                                <div class="alert alert-danger">
+                                    <strong>Order Rejected</strong><br/>
+                                    This order has been rejected.
+                                    Please contact the pharmacy for further assistance.
+                                </div>
+                            </t>
+
+                            <!-- Auth Code Form - only show if approval is still valid -->
+                            <t t-elif="approval.state == 'approved'">
+                                <form t-attf-action="/pharmacy/order/{{ order.id }}/approve"
+                                      method="post">
+                                    <input type="hidden" name="csrf_token"
+                                           t-att-value="request.csrf_token()"/>
+
+                                    <div class="mb-3">
+                                        <label for="auth_code" class="form-label fw-bold">
+                                            Authorisation Code
+                                        </label>
+                                        <input type="text"
+                                               id="auth_code"
+                                               name="auth_code"
+                                               class="form-control form-control-lg text-center"
+                                               placeholder="000000"
+                                               maxlength="6"
+                                               autocomplete="off"
+                                               style="letter-spacing: 8px; font-size: 1.8rem; font-weight: bold;"/>
+                                        <div class="form-text">
+                                            Enter the 6-digit code from your approval email.
+                                        </div>
+                                    </div>
+
+                                    <div class="d-grid">
+                                        <button type="submit" class="btn btn-primary btn-lg">
+                                            Confirm Order
+                                        </button>
+                                    </div>
+                                </form>
+                            </t>
+
+                            <!-- Pending state - approval not yet issued -->
+                            <t t-elif="approval.state == 'pending'">
+                                <div class="alert alert-info">
+                                    <strong>Awaiting Approval</strong><br/>
+                                    Your order is currently under review.
+                                    You will receive an email with your authorisation
+                                    code once it has been approved.
+                                </div>
+                            </t>
+
+                            <!-- Resent success message -->
+                            <div t-if="resent" class="alert alert-success mt-3">
+                                A new authorisation code has been sent to your email.
+                            </div>
+
+                            <!-- Resend link -->
+                            <div class="mt-4 text-center">
+                                <a t-attf-href="/pharmacy/order/{{ order.id }}/approve"
+                                   class="text-muted d-block mb-2">
+                                    ← Back to Order
+                                </a>
+                                <a t-attf-href="/pharmacy/order/{{ order.id }}/resend-code"
+                                   class="text-muted small"
+                                   onclick="return confirm('This will invalidate your current code and send a new one. Continue?')">
+                                    Didn't receive the code? Resend →
+                                </a>
+                            </div>
+
+                        </div>
+                    </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- ══ 2. Inject pending approval banner on native order detail page ═ -->
+    <template id="portal_order_approved_banner"
+              inherit_id="sale.sale_order_portal_template"
+              name="Pharma: Order Approved Success Banner">
+        <xpath expr="//div[hasclass('o_portal_sidebar')]" position="before">
+            <t t-if="sale_order.state == 'pending_approval'">
+                <div class="alert alert-warning text-center mb-0">
+                    <strong>⚠ Order On Hold</strong>
+                    This order contains controlled items and is awaiting approval.
+                    <a t-attf-href="/pharmacy/order/{{ sale_order.id }}/approve"
+                       class="alert-link ms-2">
+                        Enter Authorisation Code →
+                    </a>
+                </div>
+            </t>
+        </xpath>
+    </template>
+
+    <!-- ══ 3. Add Pending Approvals card to My Account page ══════════════ -->
+    <template id="portal_my_home_pending_approval"
+              name="Pending Approvals"
+              inherit_id="sale.portal_my_home_sale"
+              customize_show="True"
+              active="True"
+              priority="25">
+        <div id="portal_client_category" position="inside">
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="icon" t-value="'/sale/static/src/img/bag.svg'"/>
+                <t t-set="title">Pending Approvals</t>
+                <t t-set="text">Orders awaiting your authorisation code</t>
+                <t t-set="url" t-value="'/my/pending-approvals'"/>
+                <t t-set="placeholder_count" t-value="'pending_approval_count'"/>
+                <t t-set="config_card" t-value="True"/>
+            </t>
+        </div>
+    </template>
+
+    <!-- ══ 4. Dedicated Pending Approvals list page ═══════════════════════ -->
+    <template id="portal_pending_approvals" name="Pharma: Pending Approvals List">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="False"/>
+            <t t-call="portal.portal_searchbar">
+                <t t-set="title">Pending Approvals</t>
+            </t>
+
+            <div t-if="not orders" class="alert alert-info" role="alert">
+                You have no orders pending approval at this time.
+            </div>
+
+            <t t-if="orders" t-call="portal.portal_table">
+                <thead>
+                    <tr>
+                        <th>Order #</th>
+                        <th>Date</th>
+                        <th>Controlled Items</th>
+                        <th class="text-end d-none">Total</th>
+                        <th class="text-end">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr t-foreach="orders" t-as="order">
+                        <td>
+                            <a t-att-href="order.get_portal_url()"
+                               t-esc="order.name"/>
+                        </td>
+                        <td>
+                            <span t-field="order.date_order"
+                                  t-options='{"widget": "date"}'/>
+                        </td>
+                        <td>
+                            <span t-esc="order.x_approval_id.controlled_item_names or '-'"/>
+                        </td>
+                        <td class="text-end d-none">
+                            <span t-field="order.amount_total"/>
+                        </td>
+                        <td class="text-end">
+                            <a t-attf-href="/pharmacy/order/{{ order.id }}/approve"
+                               class="btn btn-sm btn-warning">
+                                Enter Code →
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </t>
+        </t>
+    </template>
+
+</odoo>

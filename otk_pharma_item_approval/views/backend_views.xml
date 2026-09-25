@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- otk_pharma_item_approval/views/backend_views.xml -->
+<odoo>
+
+    <!-- ══ 1. Sale Orders - Pharma Orders (Approval + Prescription) List View ══ -->
+    <record id="view_otk_pharma_item_approval_list" model="ir.ui.view">
+        <field name="name">sale.order.otk.pharma.pending.list</field>
+        <field name="model">sale.order</field>
+        <field name="arch" type="xml">
+            <list string="Pharma Orders"
+                  decoration-warning="state == 'pending_approval'"
+                  decoration-info="state == 'pending_prescription'"
+                  decoration-success="state == 'sale'">
+                <field name="date_order" string="Requested On"/>
+                <field name="name" string="Order"/>
+                <field name="partner_id" string="Pharmacy"/>
+                <field name="x_controlled_item_names"
+                       string="Controlled Items"
+                       optional="show"
+                       invisible="x_approval_id == False"/>
+                <field name="state" string="Status"
+                       widget="badge"
+                       decoration-warning="state == 'pending_approval'"
+                       decoration-info="state == 'pending_prescription'"
+                       decoration-success="state == 'sale'"/>
+                <field name="x_approval_id" string="Approval" optional="hide"/>
+                <field name="x_prescription_uploaded_count" string="Rx Uploaded" optional="show"/>
+                <field name="x_prescription_required_count" string="Rx Required" optional="show"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ══ 2. otk.pharma.item.approval - Form View ════════════════════════════ -->
+    <record id="view_otk_pharma_item_approval_form" model="ir.ui.view">
+        <field name="name">otk.pharma.item.approval.form</field>
+        <field name="model">otk.pharma.item.approval</field>
+        <field name="arch" type="xml">
+            <form string="Approval Request">
+                <header>
+                    <button name="action_approve"
+                            string="Approve &amp; Send Code"
+                            type="object"
+                            class="btn-success"
+                            invisible="state != 'pending'"
+                            confirm="This will generate an auth code and email it to the pharmacy. Continue?"/>
+                    <button name="action_resend_code"
+                            string="Resend Code"
+                            type="object"
+                            class="btn-primary"
+                            invisible="state not in ('approved', 'expired')"
+                            confirm="This will generate a NEW auth code and email it. The old code will stop working. Continue?"/>
+                    <button name="action_reject"
+                            string="Reject"
+                            type="object"
+                            class="btn-danger"
+                            invisible="state != 'pending'"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="pending,approved,rejected,expired"/>
+                </header>
+                <sheet>
+                    <group string="Order Details">
+                        <field name="order_id" readonly="1"/>
+                        <field name="partner_id" readonly="1"/>
+                        <field name="controlled_item_names" readonly="1"/>
+                    </group>
+                    <group string="Approval Details">
+                        <field name="approved_by" readonly="1"/>
+                        <field name="approval_date" readonly="1"/>
+                        <field name="expiry_date" readonly="1"/>
+                        <field name="rejection_reason"
+                               invisible="state != 'rejected'"/>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- ══ 3. Pharma Orders - Action ══════════════════════════════════════ -->
+    <record id="action_otk_pharma_item_approval" model="ir.actions.act_window">
+        <field name="name">Pharma Approvals</field>
+        <field name="path">pharma-approvals</field>
+        <field name="res_model">sale.order</field>
+        <field name="view_mode">list,form</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'list', 'view_id': ref('view_otk_pharma_item_approval_list')}),
+        ]"/>
+        <field name="domain">['|', ('x_has_controlled_items', '=', True), ('x_has_prescription_items', '=', True)]</field>
+        <field name="context">{}</field>
+    </record>
+
+    <!-- ══ 4. Menu Items ══════════════════════════════════════════════════ -->
+    <menuitem
+        id="menu_otk_pharma_approval_root"
+        name="Pharma Approvals"
+        sequence="75"
+        web_icon="otk_pharma_item_approval,static/description/icon.png"/>
+
+    <menuitem
+        id="menu_otk_pharma_approval_requests"
+        name="All Orders"
+        parent="menu_otk_pharma_approval_root"
+        action="action_otk_pharma_item_approval"
+        sequence="10"/>
+
+    <!-- ══ 5. product.template - Add controlled fields to product form ═══ -->
+    <record id="view_product_template_otk_pharma_approval" model="ir.ui.view">
+        <field name="name">product.template.otk.pharma.approval</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='general_information']" position="after">
+                <page string="Pharmacy Controls" name="otk_pharma_controls">
+                    <group>
+                        <field name="x_requires_approval"/>
+                        <field name="x_approval_note"
+                               invisible="x_requires_approval == False"/>
+                        <field name="x_requires_prescription"/>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- ══ 6. sale.order - Add approval buttons and state to order form ══ -->
+    <record id="view_sale_order_otk_pharma_approval" model="ir.ui.view">
+        <field name="name">sale.order.otk.pharma.approval</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+
+            <!-- Add Approve / Reject buttons in the header -->
+            <xpath expr="//header/button[1]" position="before">
+                <button name="action_approve_order"
+                        string="Approve Order"
+                        type="object"
+                        class="btn-success"
+                        invisible="state != 'pending_approval'"/>
+                <button name="action_reject_order"
+                        string="Reject Order"
+                        type="object"
+                        class="btn-danger"
+                        invisible="true"/>
+            </xpath>
+
+            <!-- Add approval info banner below the header (approval hold) -->
+            <xpath expr="//sheet" position="before">
+                <div class="alert alert-warning mb-0" role="alert"
+                     invisible="state != 'pending_approval'">
+                    <strong>⚠ This order is on hold.</strong>
+                    It contains controlled items and requires approval before it
+                    can be confirmed. Use the buttons above to approve or reject.
+                    <br/>
+                    <strong>Controlled Items: </strong>
+                    <field name="x_controlled_item_names" readonly="1"/>
+                </div>
+                <!-- Add prescription pending banner -->
+                <div class="alert alert-info mb-0" role="status"
+                     invisible="state != 'pending_prescription'">
+                    <strong>📋 Prescription Required.</strong>
+                    This order contains items that require a prescription.
+                    The pharmacy must upload valid prescriptions before this
+                    order can proceed.
+                    <br/>
+                    <strong>Prescriptions: </strong>
+                    <field name="x_prescription_uploaded_count" readonly="1"/>
+                    / <field name="x_prescription_required_count" readonly="1"/>
+                    uploaded.
+                </div>
+            </xpath>
+
+            <!-- Add approval tab below order lines -->
+            <xpath expr="//page[@name='order_lines']" position="after">
+                <page string="Approval" name="otk_pharma_approval"
+                      invisible="x_approval_id == False">
+                    <group>
+                        <field name="x_approval_id" readonly="1"/>
+                        <field name="x_has_controlled_items" readonly="1"/>
+                    </group>
+                </page>
+                <!-- Add prescriptions tab -->  
+                <page string="Prescriptions" name="otk_pharma_prescriptions"
+                      invisible="not x_has_prescription_items">
+                    <group>
+                        <group>
+                            <field name="x_has_prescription_items" readonly="1"/>
+                            <field name="x_prescription_required_count" readonly="1"/>
+                            <field name="x_prescription_uploaded_count" readonly="1"/>
+                            <field name="x_all_prescriptions_uploaded" readonly="1"/>
+                        </group>
+                    </group>
+                    <field name="x_prescription_line_ids" readonly="1">
+                        <list>
+                            <field name="product_name" string="Product"/>
+                            <field name="prescription_filename" string="File"/>
+                            <field name="state" string="Status" widget="badge"
+                                   decoration-success="state == 'uploaded'"
+                                   decoration-warning="state == 'pending'"/>
+                        </list>
+                    </field>
+                </page>
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>

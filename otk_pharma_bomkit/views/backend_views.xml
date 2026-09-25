@@ -1,0 +1,342 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 1. PHARMA BOM - List View                                     -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <record id="view_otk_pharma_bom_list" model="ir.ui.view">
+        <field name="name">otk.pharma.bom.list</field>
+        <field name="model">otk.pharma.bom</field>
+        <field name="arch" type="xml">
+            <list string="BOM / Kit Definitions">
+                <field name="name"/>
+                <field name="product_tmpl_id"/>
+                <field name="bom_type" widget="badge"
+                       decoration-info="bom_type == 'kit_only'"
+                       decoration-success="bom_type == 'explode'"/>
+                <field name="component_count"/>
+                <field name="active" invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 2. PHARMA BOM - Form View                                     -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <record id="view_otk_pharma_bom_form" model="ir.ui.view">
+        <field name="name">otk.pharma.bom.form</field>
+        <field name="model">otk.pharma.bom</field>
+        <field name="arch" type="xml">
+            <form string="BOM / Kit Definition">
+                <header>
+                    <button name="action_view_components"
+                            string="View Components"
+                            type="object"
+                            class="btn-primary"
+                            invisible="component_count == 0"/>
+                </header>
+                <sheet>
+                    <div class="alert alert-warning" role="alert"
+                         invisible="component_count > 0">
+                        <strong>⚠ Incomplete BOM:</strong>
+                        Add at least one component below to configure this kit.
+                    </div>
+                    <div class="alert alert-info" role="alert"
+                         invisible="not bom_line_ids">
+                        <strong>💰 Kit Sale Price:</strong>
+                        <field name="kit_calculated_price" readonly="1"
+                               widget="monetary"/>
+                        <span class="ms-2 text-muted">
+                            (auto-calculated from component list prices - updates the kit product's Sale Price)
+                        </span>
+                    </div>
+                    <group>
+                        <field name="name"/>
+                        <field name="product_tmpl_id"/>
+                        <field name="product_id"
+                               invisible="not product_tmpl_id"
+                               groups="product.group_product_variant"/>
+                        <field name="bom_type"/>
+                        <field name="active" invisible="1"/>
+                    </group>
+                    <notebook>
+                        <page string="Components" name="components">
+                            <field name="bom_line_ids">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="product_id"/>
+                                    <field name="product_qty"/>
+                                    <field name="is_fixed_quantity" widget="boolean_toggle"/>
+                                    <field name="product_uom_id"
+                                           column_invisible="True"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                    <group class="mt-3">
+                        <group>
+                            <field name="component_count" readonly="1"/>
+                        </group>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 3. PHARMA BOM - Search View                                   -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <record id="view_otk_pharma_bom_search" model="ir.ui.view">
+        <field name="name">otk.pharma.bom.search</field>
+        <field name="model">otk.pharma.bom</field>
+        <field name="arch" type="xml">
+            <search string="Search BOM">
+                <field name="name"/>
+                <field name="product_tmpl_id"/>
+                <filter string="Archived" name="inactive"
+                        domain="[('active', '=', False)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="BOM Type" name="group_type"
+                            context="{'group_by': 'bom_type'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 4. PHARMA BOM - Action                                        -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <record id="action_otk_pharma_bom" model="ir.actions.act_window">
+        <field name="name">BOM / Kit Definitions</field>
+        <field name="path">pharma-bom-kits</field>
+        <field name="res_model">otk.pharma.bom</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_otk_pharma_bom_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first BOM/Kit definition
+            </p>
+            <p>
+                Define kit products and their component items. When a kit is sold,
+                it will be handled based on the BOM type (show components or explode).
+            </p>
+        </field>
+    </record>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 5. PRODUCT FORM - BOM/Kit Tab Extension + Readonly Sale Price  -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <record id="view_product_template_otk_pharma_bom" model="ir.ui.view">
+        <field name="name">product.template.otk.pharma.bom</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view"/>
+        <field name="arch" type="xml">
+            <!-- Make Sale Price readonly in General tab when product is a kit -->
+            <xpath expr="//field[@name='list_price']" position="attributes">
+                <attribute name="readonly">is_kit_product</attribute>
+                <attribute name="force_save">1</attribute>
+            </xpath>
+
+            <!-- Add BOM/Kit tab after general info -->
+            <xpath expr="//page[@name='general_information']" position="after">
+                <page string="BOM / Kit" name="otk_pharma_bom"
+                      invisible="not otk_pharma_bom_ids">
+                    <field name="otk_pharma_bom_ids" readonly="1">
+                        <list>
+                            <field name="name"/>
+                            <field name="product_id" string="Kit Variant" optional="show"/>
+                            <field name="bom_type" widget="badge"
+                                   decoration-info="bom_type == 'kit_only'"
+                                   decoration-success="bom_type == 'explode'"/>
+                            <field name="component_count"/>
+                            <field name="kit_calculated_price" widget="monetary"/>
+                        </list>
+                        <form>
+                            <group>
+                                <field name="name"/>
+                                <field name="product_tmpl_id"/>
+                                <field name="product_id"/>
+                                <field name="bom_type"/>
+                                <field name="component_count"/>
+                                <field name="kit_calculated_price" widget="monetary"/>
+                            </group>
+                            <field name="bom_line_ids" readonly="1">
+                                <list>
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="product_id"/>
+                                    <field name="product_qty"/>
+                                    <field name="is_fixed_quantity" widget="boolean_toggle"/>
+                                    <field name="product_uom_id"/>
+                                </list>
+                            </field>
+                        </form>
+                    </field>
+                    <div class="mt-3">
+                        <button name="%(action_otk_pharma_bom)d"
+                                string="Edit BOM Definition"
+                                type="action"
+                                class="btn-primary"
+                                context="{'search_default_product_tmpl_id': id}"/>
+                    </div>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- (Product BOM indicator removed - shown in BOM tab instead) -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 7. SALE ORDER FORM - Kit Components Tab with Stock Info        -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <record id="view_sale_order_otk_pharma_bom" model="ir.ui.view">
+        <field name="name">sale.order.otk.pharma.bom</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+
+            <!-- Add kit status badge in header -->
+            <!-- AFTER - places div after the closing </header> tag -->
+            <xpath expr="//header" position="after">
+                <div class="alert alert-info mb-0 rounded-0 border-start-0 border-end-0"
+                    role="alert"
+                    invisible="not has_kit_products">
+                    <strong>📦 This order contains kit products.</strong>
+                    Components will be assembled upon confirmation.
+                </div>
+            </xpath>
+
+            <!-- Add Kit Components tab with summary -->
+            <xpath expr="//page[@name='order_lines']" position="after">
+                <page string="Kit Components" name="kit_components"
+                      invisible="kit_component_count == 0">
+                    <div class="alert alert-info mb-3" role="alert">
+                        <strong>Component Stock Overview</strong>
+                        <p class="mb-0 text-muted">
+                            Stock levels shown are for the actual component items that will be deducted from inventory upon order confirmation.
+                            Components are not listed in Order Lines for compliance reasons.
+                        </p>
+                    </div>
+                    <field name="kit_component_summary" readonly="1"
+                           widget="text" class="font-monospace" nolabel="1"/>
+                    <div class="mt-3 text-muted small">
+                        <span class="me-2">🟢 In Stock</span>
+                        <span class="me-2">🟡 Low Stock</span>
+                        <span>🔴 Out of Stock</span>
+                    </div>
+                </page>
+            </xpath>
+
+        </field>
+    </record>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 8. PARTNER FORM - Pricing Tab Extension                       -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <record id="view_res_partner_otk_pharma_pricing" model="ir.ui.view">
+        <field name="name">res.partner.otk.pharma.pricing</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="otk_pharma_onboarding.view_res_partner_otk_pharma_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='otk_pharma_b2b']" position="inside">
+                <separator string="Pricing Information"/>
+                <p class="text-muted">
+                    Pricing tiers are managed through the pricelist assigned above.
+                    Each pricelist can define quantity-based price breaks
+                    (e.g., 1-10 units: $50, 11-50 units: $45, 51+ units: $40).
+                </p>
+                <div>
+                    <button name="%(product.product_pricelist_action2)d"
+                            string="Manage Pricelist Tiers →"
+                            type="action"
+                            class="btn-primary"/>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 9. PRICELIST ITEM - Enhanced Tree View                        -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <record id="view_pricelist_item_otk_pharma_tree" model="ir.ui.view">
+        <field name="name">product.pricelist.item.otk.pharma.tree</field>
+        <field name="model">product.pricelist.item</field>
+        <field name="arch" type="xml">
+            <list string="Pricing Tiers" editable="bottom">
+                <field name="product_tmpl_id"
+                       string="Product"
+                       optional="show"/>
+                <field name="applied_on" column_invisible="True"/>
+                <field name="min_quantity"
+                       string="Min Quantity"
+                       optional="show"/>
+                <field name="compute_price"
+                       string="Price Type"
+                       optional="show"/>
+                <field name="fixed_price"
+                       string="Fixed Price"
+                       optional="show"
+                       invisible="compute_price != 'fixed'"/>
+                <field name="percent_price"
+                       string="Discount %"
+                       optional="show"
+                       invisible="compute_price != 'discount'"/>
+                <field name="price_surcharge"
+                       string="Surcharge"
+                       optional="show"
+                       invisible="compute_price != 'formula'"/>
+                <field name="currency_id" column_invisible="True"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 11. PRODUCT FORM - Pharmacy Pricing Tab                       -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <record id="view_product_template_otk_pharma_pricing" model="ir.ui.view">
+        <field name="name">product.template.otk.pharma.pricing</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='otk_pharma_bom']" position="after">
+                <page string="Pharmacy Pricing" name="otk_pharma_pricing">
+                    <p class="text-muted">
+                        Price rules for this product across all pricelists:
+                    </p>
+                    <field name="product_variant_ids" readonly="1">
+                        <list>
+                            <field name="display_name"/>
+                            <field name="lst_price"/>
+                        </list>
+                        <form>
+                            <group>
+                                <field name="display_name"/>
+                                <field name="lst_price"/>
+                            </group>
+                        </form>
+                    </field>
+                    <div class="mt-3">
+                        <button name="%(product.product_pricelist_action2)d"
+                                string="Manage All Pricelists →"
+                                type="action"
+                                class="btn-secondary"/>
+                    </div>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 12. MENU ITEMS                                                 -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <menuitem id="menu_otk_pharma_bomkit_root"
+              name="Pharma BOM &amp; Kits"
+              sequence="80"
+              web_icon="otk_pharma_bomkit,static/description/icon.png"/>
+
+    <menuitem id="menu_otk_pharma_bom"
+              name="BOM / Kit Definitions"
+              parent="menu_otk_pharma_bomkit_root"
+              action="action_otk_pharma_bom"
+              sequence="10"/>
+
+</odoo>

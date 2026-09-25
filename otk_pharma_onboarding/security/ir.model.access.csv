@@ -1,0 +1,6 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_otk_pharma_onboarding_application_manager,otk.pharma.onboarding.application manager,model_otk_pharma_onboarding_application,base.group_system,1,1,1,1
+access_otk_pharma_onboarding_application_user,otk.pharma.onboarding.application user,model_otk_pharma_onboarding_application,base.group_user,1,1,1,0
+access_otk_pharma_onboarding_application_portal,otk.pharma.onboarding.application portal,model_otk_pharma_onboarding_application,base.group_portal,1,1,1,0
+access_otk_pharma_onboarding_reject_wizard_user,otk.pharma.onboarding.reject.wizard user,model_otk_pharma_onboarding_reject_wizard,base.group_user,1,1,1,1
+access_otk_pharma_onboarding_reject_wizard_manager,otk.pharma.onboarding.reject.wizard manager,model_otk_pharma_onboarding_reject_wizard,base.group_system,1,1,1,1

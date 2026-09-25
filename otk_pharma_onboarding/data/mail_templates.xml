@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- otk_pharma_onboarding/data/mail_templates.xml -->
+<odoo>
+
+    <!-- ── Welcome Email ─────────────────────────────────────── -->
+    <record id="email_template_welcome" model="mail.template">
+        <field name="name">Pharma Onboarding: Welcome / Account Activated</field>
+        <field name="model_id" ref="model_otk_pharma_onboarding_application"/>
+        <field name="subject">Welcome to our B2B Portal - Your Account is Active</field>
+        <field name="email_from">{{ (object.env.company.email or '') }}</field>
+        <field name="email_to">{{ object.email }}</field>
+        <field name="body_html"><![CDATA[
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto;">
+
+                <div style="background-color: #1B3A5C; padding: 30px; text-align: center;">
+                    <h1 style="color: #ffffff; margin: 0;">Account Activated</h1>
+                </div>
+
+                <div style="padding: 30px; background-color: #ffffff; border: 1px solid #e0e0e0;">
+                    <p style="font-size: 16px;">Dear <strong>{{ object.contact_name }}</strong>,</p>
+
+                    <p>We are pleased to inform you that your B2B pharmacy account for
+                    <strong>{{ object.name }}</strong> has been reviewed and activated.</p>
+
+                    <p>You can now log in to our B2B portal to browse our product catalog,
+                    place orders, and manage your account.</p>
+
+                    <div style="text-align: center; margin: 30px 0;">
+                        <a href="{{ object.env['ir.config_parameter'].sudo().get_param('web.base.url') }}/web/login"
+                           style="background-color: #2E75B6; color: #ffffff; padding: 14px 28px;
+                                  text-decoration: none; border-radius: 4px; font-size: 16px;">
+                            Login to Portal
+                        </a>
+                    </div>
+
+                    <p>Your registered email address is: <strong>{{ object.email }}</strong></p>
+                    <p>If you have not set your password yet, use the
+                    <a href="{{ object.env['ir.config_parameter'].sudo().get_param('web.base.url') }}/web/reset_password">
+                    password reset link</a> on the login page.</p>
+
+                    <hr style="border: none; border-top: 1px solid #e0e0e0; margin: 24px 0;"/>
+
+                    <p style="color: #888888; font-size: 13px;">
+                        If you have any questions, please contact us by replying to this email.
+                    </p>
+                </div>
+
+                <div style="background-color: #f5f5f5; padding: 16px; text-align: center;">
+                    <p style="color: #aaaaaa; font-size: 12px; margin: 0;">
+                        {{ object.env.company.name }} &mdash; {{ object.env.company.street }},
+                        {{ object.env.company.city }}
+                    </p>
+                </div>
+
+            </div>
+        ]]></field>
+        <field name="auto_delete" eval="True"/>
+    </record>
+
+    <!-- ── Rejection Email ────────────────────────────────────── -->
+    <record id="email_template_rejection" model="mail.template">
+        <field name="name">Pharma Onboarding: Application Rejected</field>
+        <field name="model_id" ref="model_otk_pharma_onboarding_application"/>
+        <field name="subject">Update on Your B2B Account Application</field>
+        <field name="email_from">{{ (object.env.company.email or '') }}</field>
+        <field name="email_to">{{ object.email }}</field>
+        <field name="body_html"><![CDATA[
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto;">
+
+                <div style="background-color: #1B3A5C; padding: 30px; text-align: center;">
+                    <h1 style="color: #ffffff; margin: 0;">Application Update</h1>
+                </div>
+
+                <div style="padding: 30px; background-color: #ffffff; border: 1px solid #e0e0e0;">
+                    <p style="font-size: 16px;">Dear <strong>{{ object.contact_name }}</strong>,</p>
+
+                    <p>Thank you for your interest in becoming a B2B partner with
+                    <strong>{{ object.env.company.name }}</strong>.</p>
+
+                    <p>After reviewing your application for <strong>{{ object.name }}</strong>,
+                    we are unable to proceed at this time for the following reason:</p>
+
+                    <div style="background-color: #fff4f0; border-left: 4px solid #C55A11;
+                                padding: 16px; margin: 20px 0; border-radius: 0 4px 4px 0;">
+                        <p style="margin: 0; color: #333333;">
+                            {{ object.rejection_reason or 'Please contact us for further details.' }}
+                        </p>
+                    </div>
+
+                    <p>If you believe this decision was made in error or would like to discuss
+                    further, please do not hesitate to contact us by replying to this email.</p>
+
+                    <hr style="border: none; border-top: 1px solid #e0e0e0; margin: 24px 0;"/>
+
+                    <p style="color: #888888; font-size: 13px;">
+                        This decision may be reconsidered if circumstances change.
+                        We appreciate your understanding.
+                    </p>
+                </div>
+
+                <div style="background-color: #f5f5f5; padding: 16px; text-align: center;">
+                    <p style="color: #aaaaaa; font-size: 12px; margin: 0;">
+                        {{ object.env.company.name }} &mdash; {{ object.env.company.street }},
+                        {{ object.env.company.city }}
+                    </p>
+                </div>
+
+            </div>
+        ]]></field>
+        <field name="auto_delete" eval="True"/>
+    </record>
+
+</odoo>

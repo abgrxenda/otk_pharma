@@ -1,0 +1,708 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- otk_pharma_onboarding/views/portal_templates.xml -->
+<odoo>
+
+    <!-- ── Step 1: Registration Form ─────────────────────────── -->
+    <template id="portal_pharmacy_register" name="Pharmacy Registration">
+        <t t-call="website.layout">
+            <div class="container py-5" style="max-width: 700px;">
+
+                <div class="text-center mb-4">
+                    <h1 class="h2">Apply for a B2B Account</h1>
+                    <p class="text-muted">
+                        Fill in the form below to request a wholesale supply
+                        contract with our pharmacy.
+                    </p>
+                </div>
+
+                <!-- Error Banner -->
+                <t t-if="error">
+                    <div class="alert alert-danger">
+                        <t t-if="error.get('email_exists')">
+                            An application with this email already exists.
+                            Please contact us if you need assistance.
+                        </t>
+                        <t t-elif="error">
+                            Please correct the highlighted fields below.
+                        </t>
+                    </div>
+                </t>
+
+                <form action="/pharmacy/register/submit" method="POST" enctype="multipart/form-data">
+                    <input type="hidden" name="csrf_token"
+                           t-att-value="request.csrf_token()"/>
+
+                    <!-- Pharmacy Info -->
+                    <div class="card mb-4">
+                        <div class="card-header bg-primary text-white">
+                            <strong>Pharmacy Information</strong>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-12 mb-3">
+                                    <label class="form-label">
+                                        Pharmacy Name
+                                        <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text" name="name"
+                                           class="form-control"
+                                           t-att-class="'form-control is-invalid' if error.get('name') else 'form-control'"
+                                           t-att-value="form_data.get('name', '')"
+                                           placeholder="Legal pharmacy name"/>
+                                </div>
+                                <div class="col-md-12 mb-3">
+                                    <label class="form-label">
+                                        License Number
+                                        <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text"
+                                           name="pharmacy_license_number"
+                                           class="form-control"
+                                           t-att-class="'form-control is-invalid' if error.get('pharmacy_license_number') else 'form-control'"
+                                           t-att-value="form_data.get('pharmacy_license_number', '')"
+                                           placeholder="Provincial pharmacy license #"/>
+                                </div>
+                                <div class="col-md-12 mb-3">
+                                    <label class="form-label">
+                                        Pharmacy License Document
+                                        <span class="text-muted small">(optional)</span>
+                                    </label>
+                                    <input type="file"
+                                           name="pharmacy_license_doc"
+                                           class="form-control"
+                                           accept="*/*"/>
+                                    <div class="form-text">
+                                        Upload your pharmacy license document (PDF, image, or any format).
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contact Person -->
+                    <div class="card mb-4">
+                        <div class="card-header bg-primary text-white">
+                            <strong>Contact Person</strong>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-12 mb-3">
+                                    <label class="form-label">
+                                        Full Name
+                                        <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text" name="contact_name"
+                                           class="form-control"
+                                           t-att-class="'form-control is-invalid' if error.get('contact_name') else 'form-control'"
+                                           t-att-value="form_data.get('contact_name', '')"
+                                           placeholder="Primary contact name"/>
+                                </div>
+                                <div class="col-md-12 mb-3">
+                                    <label class="form-label">
+                                        Email Address
+                                        <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="email" name="email"
+                                           class="form-control"
+                                           t-att-class="'form-control is-invalid' if error.get('email') else 'form-control'"
+                                           t-att-value="form_data.get('email', '')"
+                                           placeholder="contact@pharmacy.com"/>
+                                </div>
+                                <div class="col-md-12 mb-3">
+                                    <label class="form-label">
+                                        Phone
+                                        <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="tel" name="phone"
+                                           class="form-control"
+                                           t-att-class="'form-control is-invalid' if error.get('phone') else 'form-control'"
+                                           t-att-value="form_data.get('phone', '')"
+                                           placeholder="+1 (xxx) xxx-xxxx"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Address -->
+                    <div class="card mb-4">
+                        <div class="card-header bg-primary text-white">
+                            <strong>Pharmacy Address</strong>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-12 mb-3">
+                                    <label class="form-label">Street</label>
+                                    <input type="text" name="street"
+                                           class="form-control"
+                                           t-att-value="form_data.get('street', '')"
+                                           placeholder="123 Main Street"/>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">City</label>
+                                    <input type="text" name="city"
+                                           class="form-control"
+                                           t-att-value="form_data.get('city', '')"
+                                           placeholder="Toronto"/>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Province</label>
+                                    <select name="province" class="form-select" style="height:44px;">
+                                        <option value="">-- Select --</option>
+                                        <option value="AB" t-att-selected="'selected' if form_data.get('province') == 'AB' else None">Alberta</option>
+                                        <option value="BC" t-att-selected="'selected' if form_data.get('province') == 'BC' else None">British Columbia</option>
+                                        <option value="MB" t-att-selected="'selected' if form_data.get('province') == 'MB' else None">Manitoba</option>
+                                        <option value="NB" t-att-selected="'selected' if form_data.get('province') == 'NB' else None">New Brunswick</option>
+                                        <option value="NL" t-att-selected="'selected' if form_data.get('province') == 'NL' else None">Newfoundland</option>
+                                        <option value="NS" t-att-selected="'selected' if form_data.get('province') == 'NS' else None">Nova Scotia</option>
+                                        <option value="ON" t-att-selected="'selected' if form_data.get('province') == 'ON' else None">Ontario</option>
+                                        <option value="PE" t-att-selected="'selected' if form_data.get('province') == 'PE' else None">Prince Edward Island</option>
+                                        <option value="QC" t-att-selected="'selected' if form_data.get('province') == 'QC' else None">Quebec</option>
+                                        <option value="SK" t-att-selected="'selected' if form_data.get('province') == 'SK' else None">Saskatchewan</option>
+                                        <option value="NT" t-att-selected="'selected' if form_data.get('province') == 'NT' else None">Northwest Territories</option>
+                                        <option value="NU" t-att-selected="'selected' if form_data.get('province') == 'NU' else None">Nunavut</option>
+                                        <option value="YT" t-att-selected="'selected' if form_data.get('province') == 'YT' else None">Yukon</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Postal Code</label>
+                                    <input type="text" name="postal_code"
+                                           class="form-control"
+                                           t-att-value="form_data.get('postal_code', '')"
+                                           placeholder="A1A 1A1"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary rounded-2 p-sm-2">
+                            Continue to Contract Signing →
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+        </t>
+    </template>
+
+    <!-- ── Step 2: Contract Signing ───────────────────────────── -->
+    <template id="portal_pharmacy_contract" name="Pharmacy Contract">
+        <t t-call="website.layout">
+            <div class="container py-5" style="max-width: 750px;">
+
+                <div class="text-center mb-4">
+                    <h1 class="h2">Review &amp; Sign Contract</h1>
+                    <p class="text-muted">
+                        Please read the wholesale supply agreement below.
+                        Sign at the bottom to submit your application.
+                    </p>
+                </div>
+
+                <t t-if="error.get('signature')">
+                    <div class="alert alert-danger">
+                        Please provide your digital signature before submitting.
+                    </div>
+                </t>
+
+                <!-- Contract Text -->
+                <div class="card mb-4">
+                    <div class="card-header bg-dark text-white">
+                        <strong>Wholesale Supply Agreement</strong>
+                    </div>
+                    <div class="card-body"
+                         style="max-height: 400px; overflow-y: auto;">
+                        <h5>Terms and Conditions</h5>
+                        <p>This Wholesale Supply Agreement ("Agreement") is entered
+                        into between the main pharmacy ("Supplier") and the applying
+                        pharmacy ("Partner") identified in the registration form.</p>
+
+                        <h6>1. Supply of Products</h6>
+                        <p>The Supplier agrees to supply compound medicines and
+                        pharmaceutical products to the Partner subject to availability,
+                        applicable regulations, and the terms of this Agreement.</p>
+
+                        <h6>2. Ordering</h6>
+                        <p>Orders must be placed through the B2B portal. Minimum order
+                        values and lead times apply as communicated by the Supplier.</p>
+
+                        <h6>3. Pricing &amp; Discounts</h6>
+                        <p>Pricing is determined by the Partner's assigned tier at the
+                        time of order. The Supplier reserves the right to adjust pricing
+                        with reasonable notice.</p>
+
+                        <h6>4. Payment Terms</h6>
+                        <p>Payment terms are assigned per Partner account. Overdue
+                        accounts may result in order suspension until balances
+                        are cleared.</p>
+
+                        <h6>5. Controlled Substances</h6>
+                        <p>Orders containing controlled compound medicines require
+                        explicit approval from the Supplier before fulfillment.
+                        All applicable Canadian regulations apply.</p>
+
+                        <h6>6. Delivery</h6>
+                        <p>Delivery is performed by the Supplier's internal team.
+                        A delivery fee applies per order as agreed in the Partner
+                        account setup.</p>
+
+                        <h6>7. Governing Law</h6>
+                        <p>This Agreement is governed by the laws of Canada and the
+                        applicable provincial regulations of the Partner's location.</p>
+                    </div>
+                </div>
+
+                <!-- Signature Form -->
+                <form action="/pharmacy/contract/submit" method="POST">
+                    <input type="hidden" name="csrf_token"
+                           t-att-value="request.csrf_token()"/>
+
+                    <div class="card mb-4">
+                        <div class="card-header bg-primary text-white">
+                            <strong>Digital Signature</strong>
+                        </div>
+                        <div class="card-body">
+                            <p class="text-muted small">
+                                By signing below, you confirm that you have read
+                                and agree to the terms of this Agreement on behalf
+                                of <strong t-esc="application.name"/>.
+                            </p>
+
+                            <!-- Signature Canvas -->
+                            <div id="signature-pad-container"
+                                 style="border: 2px solid #dee2e6;
+                                        border-radius: 4px;
+                                        background: #fff;
+                                        position: relative;">
+                                <canvas id="signature-pad"
+                                        style="width:100%; height:200px;
+                                               display:block; cursor:crosshair;">
+                                </canvas>
+                            </div>
+
+                            <div class="mt-2 d-flex gap-2">
+                                <button type="button" id="clear-signature"
+                                        class="btn btn-sm btn-outline-secondary">
+                                    Clear Signature
+                                </button>
+                                <span class="text-muted small mt-1">
+                                    Sign using your mouse or touchscreen
+                                </span>
+                            </div>
+
+                            <!-- Hidden input that holds the base64 signature -->
+                            <input type="hidden" name="signature"
+                                   id="signature-data"/>
+                        </div>
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" id="submit-contract"
+                                class="btn rounded-2 p-sm-2 btn-success">
+                            I Agree &amp; Submit Application
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Signature Pad JS -->
+                <script>
+                    (function() {
+                        const canvas = document.getElementById('signature-pad');
+                        const ctx = canvas.getContext('2d');
+                        let drawing = false;
+                        let hasSignature = false;
+
+                        // Fix canvas resolution for retina screens
+                        function resizeCanvas() {
+                            const rect = canvas.getBoundingClientRect();
+                            canvas.width = rect.width;
+                            canvas.height = rect.height;
+                        }
+                        resizeCanvas();
+
+                        function getPos(e) {
+                            const rect = canvas.getBoundingClientRect();
+                            if (e.touches) {
+                                return {
+                                    x: e.touches[0].clientX - rect.left,
+                                    y: e.touches[0].clientY - rect.top
+                                };
+                            }
+                            return {
+                                x: e.clientX - rect.left,
+                                y: e.clientY - rect.top
+                            };
+                        }
+
+                        canvas.addEventListener('mousedown', function(e) {
+                            drawing = true;
+                            const pos = getPos(e);
+                            ctx.beginPath();
+                            ctx.moveTo(pos.x, pos.y);
+                        });
+
+                        canvas.addEventListener('mousemove', function(e) {
+                            if (!drawing) return;
+                            const pos = getPos(e);
+                            ctx.lineWidth = 2;
+                            ctx.lineCap = 'round';
+                            ctx.strokeStyle = '#000';
+                            ctx.lineTo(pos.x, pos.y);
+                            ctx.stroke();
+                            hasSignature = true;
+                        });
+
+                        canvas.addEventListener('mouseup', function() {
+                            drawing = false;
+                        });
+
+                        canvas.addEventListener('mouseleave', function() {
+                            drawing = false;
+                        });
+
+                        // Touch support
+                        canvas.addEventListener('touchstart', function(e) {
+                            e.preventDefault();
+                            drawing = true;
+                            const pos = getPos(e);
+                            ctx.beginPath();
+                            ctx.moveTo(pos.x, pos.y);
+                        });
+
+                        canvas.addEventListener('touchmove', function(e) {
+                            e.preventDefault();
+                            if (!drawing) return;
+                            const pos = getPos(e);
+                            ctx.lineWidth = 2;
+                            ctx.lineCap = 'round';
+                            ctx.strokeStyle = '#000';
+                            ctx.lineTo(pos.x, pos.y);
+                            ctx.stroke();
+                            hasSignature = true;
+                        });
+
+                        canvas.addEventListener('touchend', function() {
+                            drawing = false;
+                        });
+
+                        // Clear button
+                        document.getElementById('clear-signature')
+                            .addEventListener('click', function() {
+                                ctx.clearRect(0, 0,
+                                    canvas.width, canvas.height);
+                                hasSignature = false;
+                                document.getElementById('signature-data')
+                                    .value = '';
+                            });
+
+                        // On submit - capture canvas as base64 PNG
+                        document.getElementById('submit-contract')
+                            .addEventListener('click', function(e) {
+                                if (!hasSignature) {
+                                    e.preventDefault();
+                                    alert('Please sign before submitting.');
+                                    return;
+                                }
+                                document.getElementById('signature-data')
+                                    .value = canvas.toDataURL('image/png');
+                            });
+                    })();
+                </script>
+
+            </div>
+        </t>
+    </template>
+
+    <!-- ── Step 3: Pending Page ────────────────────────────────── -->
+    <template id="portal_pharmacy_pending" name="Application Pending">
+        <t t-call="website.layout">
+            <div class="container py-5 text-center" style="max-width: 600px;">
+
+                <div class="mb-4">
+                    <span style="font-size: 64px;">✅</span>
+                </div>
+
+                <h1 class="h2 mb-3">Application Submitted</h1>
+
+                <p class="lead text-muted">
+                    Thank you for applying. Your application and signed contract
+                    have been received and are under review.
+                </p>
+
+                <div class="alert alert-info mt-4">
+                    <strong>What happens next?</strong><br/>
+                    Our team will review your application and pharmacy license.
+                    Once approved, you will receive an email with your portal
+                    login credentials.
+                </div>
+
+                <p class="text-muted small mt-4" t-if="request.env.company.email">
+                    Questions? Contact us at
+                    <a t-att-href="'mailto:' + request.env.company.email">
+                        <t t-esc="request.env.company.email"/>
+                    </a>
+                </p>
+
+            </div>
+        </t>
+    </template>
+
+    <!-- ── Custom Paper Format for Contract ──────────────────── -->
+    <record id="paperformat_contract" model="report.paperformat">
+        <field name="name">Contract Format</field>
+        <field name="default" eval="False"/>
+        <field name="format">A4</field>
+        <field name="page_height">0</field>
+        <field name="page_width">0</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">5</field>
+        <field name="margin_bottom">5</field>
+        <field name="margin_left">5</field>
+        <field name="margin_right">5</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">5</field>
+        <field name="dpi">90</field>
+    </record>
+
+    <!-- ── Contract PDF Report Template ──────────────────────── -->
+    <template id="report_contract_pdf" name="Signed Contract PDF">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <style>
+                            .info-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+                            .info-table td { padding: 6px 10px; font-size: 12px; border-bottom: 1px solid #eee; }
+                            .info-table td:first-child { font-weight: bold; width: 180px; color: #555; }
+                            .contract-title { color: #1B3A5C; font-size: 20px; margin-bottom: 5px; }
+                            .contract-subtitle { color: #888; font-size: 12px; margin-bottom: 25px; }
+                            .section-title { color: #1B3A5C; font-size: 14px; font-weight: bold;
+                                           border-bottom: 2px solid #2E75B6; padding-bottom: 4px;
+                                           margin: 20px 0 10px 0; }
+                            .clause-title { font-weight: bold; font-size: 12px; margin: 12px 0 4px 0; }
+                            p { font-size: 12px; line-height: 1.6; margin: 0 0 8px 0; }
+                            .signature-section { margin-top: 40px; padding-top: 20px;
+                                               border-top: 2px solid #1B3A5C; }
+                            .signature-box { border: 1px solid #ccc; border-radius: 4px;
+                                           padding: 10px; display: inline-block;
+                                           background: #fff; margin: 10px 0; }
+                            .signature-box img { max-width: 300px; height: 80px; display: block; }
+                            .signed-by { margin-top: 12px; font-size: 11px; color: #666; }
+                            .info-box { background: #f0f4f8; border-left: 4px solid #2E75B6;
+                                      padding: 15px 20px; margin-bottom: 20px;
+                                      border-radius: 0 4px 4px 0; }
+                        </style>
+
+                        <h1 class="contract-title">Wholesale Supply Agreement</h1>
+                        <p class="contract-subtitle">B2B Pharmacy Partner Contract</p>
+
+                        <!-- Partner Info -->
+                        <div class="info-box">
+                            <table class="info-table">
+                                <tr>
+                                    <td>Pharmacy Name:</td>
+                                    <td><t t-esc="o.name"/></td>
+                                </tr>
+                                <tr>
+                                    <td>Contact Person:</td>
+                                    <td><t t-esc="o.contact_name"/></td>
+                                </tr>
+                                <tr>
+                                    <td>Email:</td>
+                                    <td><t t-esc="o.email"/></td>
+                                </tr>
+                                <tr>
+                                    <td>Phone:</td>
+                                    <td><t t-esc="o.phone"/></td>
+                                </tr>
+                                <tr>
+                                    <td>License Number:</td>
+                                    <td><t t-esc="o.pharmacy_license_number"/></td>
+                                </tr>
+                                <tr>
+                                    <td>Province:</td>
+                                    <td><t t-esc="o.province"/></td>
+                                </tr>
+                                <tr>
+                                    <td>Date Signed:</td>
+                                    <td><t t-esc="o.contract_signed_date"/></td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <!-- Contract Terms -->
+                        <div class="section-title">Terms and Conditions</div>
+
+                        <p class="clause-title">1. Supply of Products</p>
+                        <p>The Supplier agrees to supply compound medicines and
+                        pharmaceutical products to the Partner subject to availability,
+                        applicable regulations, and the terms of this Agreement.</p>
+
+                        <p class="clause-title">2. Ordering</p>
+                        <p>Orders must be placed through the B2B portal. Minimum order
+                        values and lead times apply as communicated by the Supplier.</p>
+
+                        <p class="clause-title">3. Pricing &amp; Discounts</p>
+                        <p>Pricing is determined by the Partner's assigned tier at the
+                        time of order. The Supplier reserves the right to adjust pricing
+                        with reasonable notice.</p>
+
+                        <p class="clause-title">4. Payment Terms</p>
+                        <p>Payment terms are assigned per Partner account. Overdue
+                        accounts may result in order suspension until balances
+                        are cleared.</p>
+
+                        <p class="clause-title">5. Controlled Substances</p>
+                        <p>Orders containing controlled compound medicines require
+                        explicit approval from the Supplier before fulfillment.
+                        All applicable Canadian regulations apply.</p>
+
+                        <p class="clause-title">6. Delivery</p>
+                        <p>Delivery is performed by the Supplier's internal team.
+                        A delivery fee applies per order as agreed in the Partner
+                        account setup.</p>
+
+                        <p class="clause-title">7. Governing Law</p>
+                        <p>This Agreement is governed by the laws of Canada and the
+                        applicable provincial regulations of the Partner's location.</p>
+
+                        <!-- Signature Section -->
+                        <div class="signature-section">
+                            <div class="section-title">Digital Signature</div>
+                            <p>By signing this agreement, the Partner confirms they
+                            have read and agree to all terms above.</p>
+
+                            <div class="signature-box">
+                                <img t-att-src="'data:image/png;base64,' + (o.contract_signature.decode('utf-8') if o.contract_signature else '')"/>
+                            </div>
+
+                            <div class="signed-by">
+                                <strong>Signed by:</strong>
+                                <t t-esc="o.contact_name"/> on behalf of
+                                <t t-esc="o.name"/><br/>
+                                <strong>Date:</strong>
+                                <t t-esc="o.contract_signed_date"/><br/>
+                                <strong>Document ID:</strong>
+                                <t t-esc="o.id"/>
+                            </div>
+                        </div>
+
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <!-- ── Report Action ──────────────────────────────────────── -->
+    <record id="action_report_contract_pdf" model="ir.actions.report">
+        <field name="name">Signed Contract</field>
+        <field name="model">otk.pharma.onboarding.application</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">otk_pharma_onboarding.report_contract_pdf</field>
+        <field name="report_file">otk_pharma_onboarding.report_contract_pdf</field>
+        <field name="binding_model_id" ref="model_otk_pharma_onboarding_application"/>
+        <field name="binding_type">report</field>
+        <!-- <field name="paperformat_id" ref="base.paperformat_euro"/> -->
+        <field name="paperformat_id" ref="otk_pharma_onboarding.paperformat_contract"/>
+    </record>
+    
+    <!-- ── Website Menu Item ──────────────────────────────────── -->
+    <record id="menu_pharmacy_register" model="website.menu">
+        <field name="name">Apply for Account</field>
+        <field name="url">/pharmacy/register</field>
+        <field name="parent_id" ref="website.main_menu"/>
+        <field name="sequence">50</field>
+    </record>
+
+    <!-- ══ Confirm on Credit button on payment page ══════════════════════ -->
+    <template id="confirm_on_credit_button"
+              name="Pharma: Confirm on Credit"
+              inherit_id="website_sale.navigation_buttons">
+        <xpath expr="//t[@t-elif='not hide_payment_button']" position="before">
+            <t t-if="not request.env.user._is_public()
+                     and request.env.user.partner_id.commercial_partner_id.credit_limit
+                     and xmlid == 'website_sale.payment'">
+
+                <t t-set="partner"
+                   t-value="request.env.user.partner_id.commercial_partner_id"/>
+                <t t-set="credit_limit"
+                   t-value="partner.credit_limit or 0.0"/>
+                <t t-set="cart_total"
+                   t-value="website_sale_order.amount_total if website_sale_order else 0.0"/>
+                <t t-set="unpaid_moves"
+                   t-value="request.env['account.move'].sudo().search([
+                       ('partner_id', 'child_of', partner.id),
+                       ('move_type', '=', 'out_invoice'),
+                       ('state', '=', 'posted'),
+                       ('payment_state', 'in', ['not_paid', 'partial']),
+                   ])"/>
+                <t t-set="unpaid_total"
+                   t-value="sum(unpaid_moves.mapped('amount_residual'))"/>
+                <t t-set="credit_exceeded"
+                   t-value="(cart_total + unpaid_total) > credit_limit"/>
+
+                <!-- Button: disabled if credit exceeded -->
+                <form action="/shop/confirm_on_credit" method="post" target="_self">
+                    <input type="hidden" name="csrf_token"
+                           t-att-value="request.csrf_token()"
+                           t-nocache="The csrf token must always be up to date."/>
+                    <button type="submit"
+                            id="otk_pharma_confirm_credit_btn"
+                            t-att-class="'btn btn-success w-100 mb-2' + (' disabled' if credit_exceeded else '')"
+                            t-att-disabled="'disabled' if credit_exceeded else None">
+                        <i class="fa fa-check-circle me-2"/>
+                        Confirm on Credit
+                    </button>
+                </form>
+
+                <!-- Credit exceeded warning -->
+                <t t-if="credit_exceeded">
+                    <div class="alert alert-warning py-2 small mb-2">
+                        <i class="fa fa-exclamation-triangle me-1"/>
+                        Your outstanding balance of
+                        <strong><t t-esc="'%.2f' % unpaid_total"/></strong>
+                        exceeds your credit limit of
+                        <strong><t t-esc="'%.2f' % credit_limit"/></strong>.
+                        Please settle your balance before placing a new order.
+                    </div>
+                </t>
+
+                <!-- Normal note when within limit -->
+                <t t-if="not credit_exceeded">
+                    <div class="text-muted text-center small mb-2">
+                        Order will be invoiced to your account.
+                        <t t-if="partner.x_delivery_fee">
+                            A delivery fee of
+                            <t t-esc="partner.x_delivery_fee"/>
+                            will be added.
+                        </t>
+                    </div>
+                </t>
+
+                <div class="position-relative d-flex w-100 justify-content-center align-items-center my-2 opacity-75">
+                    <hr class="w-100"/>
+                    <span class="px-3">or</span>
+                    <hr class="w-100"/>
+                </div>
+
+                <t t-call="payment.submit_button"/>
+
+                <!-- T&C wiring - runs only if T&C checkbox exists on page -->
+                <script type="text/javascript">
+                    document.addEventListener('DOMContentLoaded', function () {
+                        var tc = document.getElementById('website_sale_tc_checkbox');
+                        var btn = document.getElementById('otk_pharma_confirm_credit_btn');
+                        if (!tc || !btn) return;
+                        if (btn.disabled) return;
+                        btn.disabled = true;
+                        btn.classList.add('disabled');
+                        tc.addEventListener('change', function () {
+                            btn.disabled = !tc.checked;
+                            btn.classList.toggle('disabled', !tc.checked);
+                        });
+                    });
+                </script>
+
+            </t>
+        </xpath>
+    </template>
+</odoo>
