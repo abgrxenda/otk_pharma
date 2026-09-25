@@ -29,6 +29,10 @@ Pharma BOM & Kit Management
         'views/backend_views.xml',
         'views/portal_templates.xml',
     ],
+    'images': [
+        'static/description/pharmacy-thumbnail.png',
+        'static/description/pharma-bom.png',
+    ],
     'installable': True,
     'application': False,
     'auto_install': False,
