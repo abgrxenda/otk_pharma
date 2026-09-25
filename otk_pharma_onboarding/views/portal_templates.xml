@@ -394,7 +394,7 @@
                                     .value = '';
                             });
 
-                        // On submit - capture canvas as base64 PNG
+                        // On submit — capture canvas as base64 PNG
                         document.getElementById('submit-contract')
                             .addEventListener('click', function(e) {
                                 if (!hasSignature) {
@@ -686,7 +686,7 @@
 
                 <t t-call="payment.submit_button"/>
 
-                <!-- T&C wiring - runs only if T&C checkbox exists on page -->
+                <!-- T&C wiring — runs only if T&C checkbox exists on page -->
                 <script type="text/javascript">
                     document.addEventListener('DOMContentLoaded', function () {
                         var tc = document.getElementById('website_sale_tc_checkbox');

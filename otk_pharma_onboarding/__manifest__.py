@@ -29,10 +29,6 @@
         'views/portal_templates.xml',
     ],
     'post_init_hook': 'create_delivery_fee_product',
-    'images': [
-        'static/description/pharmacy-register.png',
-        'static/description/pharmacy-b2b.png',
-    ],
     'installable': True,
     'application': False,
     'auto_install': False,

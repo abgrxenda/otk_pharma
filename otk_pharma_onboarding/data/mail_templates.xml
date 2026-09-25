@@ -6,7 +6,7 @@
     <record id="email_template_welcome" model="mail.template">
         <field name="name">Pharma Onboarding: Welcome / Account Activated</field>
         <field name="model_id" ref="model_otk_pharma_onboarding_application"/>
-        <field name="subject">Welcome to our B2B Portal - Your Account is Active</field>
+        <field name="subject">Welcome to our B2B Portal — Your Account is Active</field>
         <field name="email_from">{{ (object.env.company.email or '') }}</field>
         <field name="email_to">{{ object.email }}</field>
         <field name="body_html"><![CDATA[

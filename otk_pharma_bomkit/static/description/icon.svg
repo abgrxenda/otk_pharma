@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <rect width="120" height="120" rx="12" fill="#1a3c5e"/>
+  <text x="60" y="50" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="40" font-weight="bold">BOM</text>
+  <text x="60" y="80" text-anchor="middle" fill="#a8c6e0" font-family="Arial, sans-serif" font-size="16">Pharma Kit</text>
+</svg>

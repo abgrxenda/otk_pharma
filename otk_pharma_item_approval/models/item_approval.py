@@ -67,7 +67,7 @@ class OtkPharmaItemApproval(models.Model):
         string='Auth Code (Temp)',
         readonly=True,
         copy=False,
-        help='Temporary plaintext code - cleared immediately after email is sent.',
+        help='Temporary plaintext code — cleared immediately after email is sent.',
     )
     
     # ── Controlled Items Summary (for admin review) ───────────────────────────
@@ -103,7 +103,7 @@ class OtkPharmaItemApproval(models.Model):
         # Generate a 6-digit plaintext code
         plaintext_code = str(random.randint(100000, 999999))
 
-        # Hash it - we never store the plaintext long term
+        # Hash it — we never store the plaintext long term
         code_hash = hashlib.sha256(plaintext_code.encode()).hexdigest()
 
         self.write({
@@ -337,10 +337,10 @@ class OtkPharmaItemApproval(models.Model):
         if entered_hash != self.auth_code_hash:
             return False
 
-        # Code is valid - reset order to draft first so action_confirm() accepts it
+        # Code is valid — reset order to draft first so action_confirm() accepts it
         self.order_id.write({'state': 'draft'})
 
-        # Now confirm the order - skip_approval_check prevents re-triggering our hook
+        # Now confirm the order — skip_approval_check prevents re-triggering our hook
         self.order_id.with_context(skip_approval_check=True).action_confirm()
 
         # Clear the hash so it cannot be reused

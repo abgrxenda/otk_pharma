@@ -44,14 +44,14 @@ class ProductTemplate(models.Model):
     x_mlp = fields.Monetary(
         string='MLP (Max Listed Price)',
         currency_field='currency_id',
-        help='Maximum Listed Price - the highest price at which this product can be sold.',
+        help='Maximum Listed Price — the highest price at which this product can be sold.',
     )
 
     # LCAP - Lowest Alternative Price (monetary field)
     x_lcap = fields.Monetary(
         string='LCAP (Lowest Alt Price)',
         currency_field='currency_id',
-        help='Lowest Alternative Price - price of the cheapest alternative product.',
+        help='Lowest Alternative Price — price of the cheapest alternative product.',
     )
 
     # Tier (product tier/classification)
