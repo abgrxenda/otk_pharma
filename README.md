@@ -129,9 +129,9 @@ README.md
 
 ## 📝 License
 
-**Pharma B2B Suite** (`otk_pharma`) is licensed under OPL-1 (Odoo Proprietary License v1.0) and sold on the
-Odoo Apps store for USD 150 (one-time purchase). The other modules in this repository are listed with
-their own license in each module's `__manifest__.py` (`license` key).
+All modules in this repository are licensed under OPL-1 (Odoo Proprietary License v1.0). **Pharma B2B Suite**
+(`otk_pharma`), which installs the four modules, is sold on the Odoo Apps store for USD 150 (one-time
+purchase). See the `license` key in each module's `__manifest__.py`.
 
 ## 👤 Author and support
 
