@@ -1,4 +1,4 @@
-# 💊 Pharma B2B Suite for Odoo 18
+# 💊 Pharma B2B Suite for Odoo 18.0
 
 Onboard partner pharmacies, control restricted items, sell kits and keep drug data on every
 product, all inside Odoo. Install one module and get the whole suite.
