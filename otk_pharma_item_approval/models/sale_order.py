@@ -113,9 +113,9 @@ class SaleOrder(models.Model):
     def action_confirm(self):
         """
         Intercept order confirmation with two gates:
-        1. Prescription upload gate - if any product requires a prescription
+        1. Prescription upload gate — if any product requires a prescription
            and not all are uploaded, hold for prescription.
-        2. Approval gate - if any product requires approval (controlled item),
+        2. Approval gate — if any product requires approval (controlled item),
            hold for auth code approval.
         Both gates can apply to the same order.
         """
@@ -138,7 +138,7 @@ class SaleOrder(models.Model):
                 order._hold_for_approval()
                 return True
 
-        # No gates - confirm normally
+        # No gates — confirm normally
         return super().action_confirm()
 
     def _hold_for_prescription(self):
@@ -193,7 +193,7 @@ class SaleOrder(models.Model):
             'x_approval_id': approval.id,
         })
 
-        # Auto-approve immediately - generates and emails the auth code
+        # Auto-approve immediately — generates and emails the auth code
         approval.action_approve()
 
     def _confirm_after_prescription(self):
@@ -205,7 +205,7 @@ class SaleOrder(models.Model):
             if order.x_has_controlled_items:
                 order._hold_for_approval()
                 return True
-            # No approval needed - set back to draft then confirm
+            # No approval needed — set back to draft then confirm
             order.state = 'draft'
         return super().action_confirm()
 

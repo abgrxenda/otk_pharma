@@ -91,8 +91,8 @@ class OtkPharmaOnboardingApplication(models.Model):
     # ── Status ────────────────────────────────────────────────
     state = fields.Selection([
         ('draft', 'Draft'),
-        ('submitted', 'Submitted - Pending Review'),
-        ('approved', 'Approved - Active'),
+        ('submitted', 'Submitted — Pending Review'),
+        ('approved', 'Approved — Active'),
         ('rejected', 'Rejected'),
     ], string='Status', default='draft', tracking=True)
 
@@ -152,13 +152,13 @@ class OtkPharmaOnboardingApplication(models.Model):
             'x_delivery_fee': self.delivery_fee,
         })
 
-        # Set pricelist separately - property field must be set after create
+        # Set pricelist separately — property field must be set after create
         if self.pricelist_id:
             partner.sudo().write({
                 'property_product_pricelist': self.pricelist_id.id
             })
 
-        # Grant portal access - Odoo 18 compatible
+        # Grant portal access — Odoo 18 compatible
         user = self.env['res.users'].sudo().search([
             ('partner_id', '=', partner.id)
         ], limit=1)
@@ -173,7 +173,7 @@ class OtkPharmaOnboardingApplication(models.Model):
                 ])],
             })
 
-        # Send Odoo's native "set your password" email - this is the correct
+        # Send Odoo's native "set your password" email — this is the correct
         # first-login flow when no password was set during registration
         try:
             user.sudo().action_reset_password()
@@ -233,7 +233,7 @@ class OtkPharmaOnboardingApplication(models.Model):
         )
 
         mail = self.env['mail.mail'].sudo().create({
-            'subject': 'Your B2B Pharmacy Account Has Been Activated - Check Your Email to Set Password',
+            'subject': 'Your B2B Pharmacy Account Has Been Activated — Check Your Email to Set Password',
             'email_from': company.email or '',
             'email_to': self.email,
             'body_html': body_html,

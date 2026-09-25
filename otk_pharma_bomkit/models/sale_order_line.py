@@ -87,7 +87,7 @@ class SaleOrderLine(models.Model):
                 qty = bom_line.product_qty * self.product_uom_qty
             qty_map[bom_line.product_id.id] = qty
 
-        # Get component prices - use list prices directly.
+        # Get component prices — use list prices directly.
         # Pricelist-based component pricing is complex and error-prone across Odoo versions.
         # The kit price is based on component lst_price * qty.
         price_results = {p.id: p.lst_price for p in products}
@@ -129,7 +129,7 @@ class SaleOrderLine(models.Model):
         1. Sum components (fixed qty respected) → component_total
         2. Derive unit base price = component_total / kit_qty
         3. Detect pricelist factor by comparing pricelist price vs lst_price
-            on the kit product - this gives us the multiplier (e.g. 1.1 for +10%)
+            on the kit product — this gives us the multiplier (e.g. 1.1 for +10%)
         4. Apply that factor to our component-based unit price
         5. Fall back to component unit price if no pricelist or lst_price is zero
 
@@ -167,7 +167,7 @@ class SaleOrderLine(models.Model):
             # qty, then compare to lst_price to extract the factor (e.g. 1.1).
             # This works for all rule types: % discount, fixed, formula.
             # For fixed-price rules the factor would replace our base entirely,
-            # which is the correct behaviour - a fixed pricelist rule means the
+            # which is the correct behaviour — a fixed pricelist rule means the
             # client negotiated a flat kit price regardless of components.
             pricelist_factor = 1.0
             if pricelist and product.lst_price:

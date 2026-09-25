@@ -2,7 +2,7 @@
 <!-- otk_pharma_item_approval/views/backend_views.xml -->
 <odoo>
 
-    <!-- ══ 1. Sale Orders - Pharma Orders (Approval + Prescription) List View ══ -->
+    <!-- ══ 1. Sale Orders — Pharma Orders (Approval + Prescription) List View ══ -->
     <record id="view_otk_pharma_item_approval_list" model="ir.ui.view">
         <field name="name">sale.order.otk.pharma.pending.list</field>
         <field name="model">sale.order</field>
@@ -30,7 +30,7 @@
         </field>
     </record>
 
-    <!-- ══ 2. otk.pharma.item.approval - Form View ════════════════════════════ -->
+    <!-- ══ 2. otk.pharma.item.approval — Form View ════════════════════════════ -->
     <record id="view_otk_pharma_item_approval_form" model="ir.ui.view">
         <field name="name">otk.pharma.item.approval.form</field>
         <field name="model">otk.pharma.item.approval</field>
@@ -76,7 +76,7 @@
         </field>
     </record>
 
-    <!-- ══ 3. Pharma Orders - Action ══════════════════════════════════════ -->
+    <!-- ══ 3. Pharma Orders — Action ══════════════════════════════════════ -->
     <record id="action_otk_pharma_item_approval" model="ir.actions.act_window">
         <field name="name">Pharma Approvals</field>
         <field name="path">pharma-approvals</field>
@@ -103,7 +103,7 @@
         action="action_otk_pharma_item_approval"
         sequence="10"/>
 
-    <!-- ══ 5. product.template - Add controlled fields to product form ═══ -->
+    <!-- ══ 5. product.template — Add controlled fields to product form ═══ -->
     <record id="view_product_template_otk_pharma_approval" model="ir.ui.view">
         <field name="name">product.template.otk.pharma.approval</field>
         <field name="model">product.template</field>
@@ -122,7 +122,7 @@
         </field>
     </record>
 
-    <!-- ══ 6. sale.order - Add approval buttons and state to order form ══ -->
+    <!-- ══ 6. sale.order — Add approval buttons and state to order form ══ -->
     <record id="view_sale_order_otk_pharma_approval" model="ir.ui.view">
         <field name="name">sale.order.otk.pharma.approval</field>
         <field name="model">sale.order</field>

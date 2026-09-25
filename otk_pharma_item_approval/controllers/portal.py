@@ -49,8 +49,8 @@ class ItemApprovalPortal(SaleCustomerPortal):
     )
     def order_prescription_page(self, order_id, **kwargs):
         """
-        GET  - renders the prescription upload form for the given order.
-        POST - validates uploaded files and saves them.
+        GET  — renders the prescription upload form for the given order.
+        POST — validates uploaded files and saves them.
         """
         # ── Fetch and validate the order ──────────────────────────────────────
         try:
@@ -152,12 +152,12 @@ class ItemApprovalPortal(SaleCustomerPortal):
             return request.redirect('/my/orders')
 
         if order.x_has_controlled_items:
-            # Order needs approval - if not yet in pending_approval, trigger it
+            # Order needs approval — if not yet in pending_approval, trigger it
             if order.state == 'pending_prescription':
                 order.with_context(skip_prescription_check=True).action_confirm()
             return request.redirect('/pharmacy/order/%d/approve' % order_id)
         else:
-            # No approval needed - confirm the order
+            # No approval needed — confirm the order
             order.with_context(skip_prescription_check=True).action_confirm()
             return request.redirect('/my/orders/%d' % order_id)
 
@@ -197,8 +197,8 @@ class ItemApprovalPortal(SaleCustomerPortal):
     )
     def order_approval_page(self, order_id, **kwargs):
         """
-        GET  - renders the auth code entry form for the given order.
-        POST - validates the submitted code and either confirms the order
+        GET  — renders the auth code entry form for the given order.
+        POST — validates the submitted code and either confirms the order
                or returns the form with an error message.
         """
         # ── Fetch and validate the order ──────────────────────────────────────
@@ -374,5 +374,5 @@ class ItemApprovalShopOverride(SaleCustomerPortal):
         try:
             return super().shop_confirmation(**post)
         except AttributeError:
-            # Native method not found - try the original website_sale flow
+            # Native method not found — try the original website_sale flow
             return request.redirect('/my/orders')

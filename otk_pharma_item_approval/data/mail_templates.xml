@@ -4,7 +4,7 @@
 
     <!-- ══ Template 1: Notify admin that an approval request is waiting ══════ -->
     <record id="email_template_approval_request" model="mail.template">
-        <field name="name">Pharma: Approval Request - Admin Notification</field>
+        <field name="name">Pharma: Approval Request — Admin Notification</field>
         <field name="model_id" ref="sale.model_sale_order"/>
         <field name="subject">Action Required: Order #{{ object.name }} Requires Approval</field>
         <field name="email_from">{{ (object.company_id.email or user.email) }}</field>
@@ -53,7 +53,7 @@
         So object = otk.pharma.item.approval instance.
     -->
     <record id="email_template_auth_code" model="mail.template">
-        <field name="name">Pharma: Approval Auth Code - Pharmacy Notification</field>
+        <field name="name">Pharma: Approval Auth Code — Pharmacy Notification</field>
         <field name="model_id" ref="otk_pharma_item_approval.model_otk_pharma_item_approval"/>
         <field name="subject">Your Authorisation Code for Order #{{ object.order_id.name }}</field>
         <field name="email_from">{{ (object.order_id.company_id.email or user.email) }}</field>
@@ -108,7 +108,7 @@
 
     <!-- ══ Template 3: Notify pharmacy their order was rejected ═════════════ -->
     <record id="email_template_approval_rejected" model="mail.template">
-        <field name="name">Pharma: Approval Rejected - Pharmacy Notification</field>
+        <field name="name">Pharma: Approval Rejected — Pharmacy Notification</field>
         <field name="model_id" ref="otk_pharma_item_approval.model_otk_pharma_item_approval"/>
         <field name="subject">Update on Your Order #{{ object.order_id.name }}</field>
         <field name="email_from">{{ (object.order_id.company_id.email or user.email) }}</field>

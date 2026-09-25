@@ -92,7 +92,7 @@
                                 </div>
                             </t>
 
-                            <!-- Auth Code Form - only show if approval is still valid -->
+                            <!-- Auth Code Form — only show if approval is still valid -->
                             <t t-elif="approval.state == 'approved'">
                                 <form t-attf-action="/pharmacy/order/{{ order.id }}/approve"
                                       method="post">
@@ -124,7 +124,7 @@
                                 </form>
                             </t>
 
-                            <!-- Pending state - approval not yet issued -->
+                            <!-- Pending state — approval not yet issued -->
                             <t t-elif="approval.state == 'pending'">
                                 <div class="alert alert-info">
                                     <strong>Awaiting Approval</strong><br/>

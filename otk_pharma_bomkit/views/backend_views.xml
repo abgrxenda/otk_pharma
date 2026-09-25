@@ -2,7 +2,7 @@
 <odoo>
 
     <!-- ═══════════════════════════════════════════════════════════════ -->
-    <!-- 1. PHARMA BOM - List View                                     -->
+    <!-- 1. PHARMA BOM — List View                                     -->
     <!-- ═══════════════════════════════════════════════════════════════ -->
     <record id="view_otk_pharma_bom_list" model="ir.ui.view">
         <field name="name">otk.pharma.bom.list</field>
@@ -21,7 +21,7 @@
     </record>
 
     <!-- ═══════════════════════════════════════════════════════════════ -->
-    <!-- 2. PHARMA BOM - Form View                                     -->
+    <!-- 2. PHARMA BOM — Form View                                     -->
     <!-- ═══════════════════════════════════════════════════════════════ -->
     <record id="view_otk_pharma_bom_form" model="ir.ui.view">
         <field name="name">otk.pharma.bom.form</field>
@@ -47,7 +47,7 @@
                         <field name="kit_calculated_price" readonly="1"
                                widget="monetary"/>
                         <span class="ms-2 text-muted">
-                            (auto-calculated from component list prices - updates the kit product's Sale Price)
+                            (auto-calculated from component list prices — updates the kit product's Sale Price)
                         </span>
                     </div>
                     <group>
@@ -85,7 +85,7 @@
     </record>
 
     <!-- ═══════════════════════════════════════════════════════════════ -->
-    <!-- 3. PHARMA BOM - Search View                                   -->
+    <!-- 3. PHARMA BOM — Search View                                   -->
     <!-- ═══════════════════════════════════════════════════════════════ -->
     <record id="view_otk_pharma_bom_search" model="ir.ui.view">
         <field name="name">otk.pharma.bom.search</field>
@@ -105,7 +105,7 @@
     </record>
 
     <!-- ═══════════════════════════════════════════════════════════════ -->
-    <!-- 4. PHARMA BOM - Action                                        -->
+    <!-- 4. PHARMA BOM — Action                                        -->
     <!-- ═══════════════════════════════════════════════════════════════ -->
     <record id="action_otk_pharma_bom" model="ir.actions.act_window">
         <field name="name">BOM / Kit Definitions</field>
@@ -125,7 +125,7 @@
     </record>
 
     <!-- ═══════════════════════════════════════════════════════════════ -->
-    <!-- 5. PRODUCT FORM - BOM/Kit Tab Extension + Readonly Sale Price  -->
+    <!-- 5. PRODUCT FORM — BOM/Kit Tab Extension + Readonly Sale Price  -->
     <!-- ═══════════════════════════════════════════════════════════════ -->
     <record id="view_product_template_otk_pharma_bom" model="ir.ui.view">
         <field name="name">product.template.otk.pharma.bom</field>
@@ -184,9 +184,9 @@
         </field>
     </record>
 
-    <!-- (Product BOM indicator removed - shown in BOM tab instead) -->
+    <!-- (Product BOM indicator removed — shown in BOM tab instead) -->
     <!-- ═══════════════════════════════════════════════════════════════ -->
-    <!-- 7. SALE ORDER FORM - Kit Components Tab with Stock Info        -->
+    <!-- 7. SALE ORDER FORM — Kit Components Tab with Stock Info        -->
     <!-- ═══════════════════════════════════════════════════════════════ -->
     <record id="view_sale_order_otk_pharma_bom" model="ir.ui.view">
         <field name="name">sale.order.otk.pharma.bom</field>
@@ -195,7 +195,7 @@
         <field name="arch" type="xml">
 
             <!-- Add kit status badge in header -->
-            <!-- AFTER - places div after the closing </header> tag -->
+            <!-- AFTER — places div after the closing </header> tag -->
             <xpath expr="//header" position="after">
                 <div class="alert alert-info mb-0 rounded-0 border-start-0 border-end-0"
                     role="alert"
@@ -230,7 +230,7 @@
     </record>
 
     <!-- ═══════════════════════════════════════════════════════════════ -->
-    <!-- 8. PARTNER FORM - Pricing Tab Extension                       -->
+    <!-- 8. PARTNER FORM — Pricing Tab Extension                       -->
     <!-- ═══════════════════════════════════════════════════════════════ -->
     <record id="view_res_partner_otk_pharma_pricing" model="ir.ui.view">
         <field name="name">res.partner.otk.pharma.pricing</field>
@@ -255,7 +255,7 @@
     </record>
 
     <!-- ═══════════════════════════════════════════════════════════════ -->
-    <!-- 9. PRICELIST ITEM - Enhanced Tree View                        -->
+    <!-- 9. PRICELIST ITEM — Enhanced Tree View                        -->
     <!-- ═══════════════════════════════════════════════════════════════ -->
     <record id="view_pricelist_item_otk_pharma_tree" model="ir.ui.view">
         <field name="name">product.pricelist.item.otk.pharma.tree</field>
@@ -290,7 +290,7 @@
     </record>
 
     <!-- ═══════════════════════════════════════════════════════════════ -->
-    <!-- 11. PRODUCT FORM - Pharmacy Pricing Tab                       -->
+    <!-- 11. PRODUCT FORM — Pharmacy Pricing Tab                       -->
     <!-- ═══════════════════════════════════════════════════════════════ -->
     <record id="view_product_template_otk_pharma_pricing" model="ir.ui.view">
         <field name="name">product.template.otk.pharma.pricing</field>

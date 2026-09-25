@@ -115,7 +115,7 @@ class OtkPharmaOnboardingController(http.Controller):
         """
         application_id = request.session.get('otk_pharma_application_id')
         if not application_id:
-            # No session - send back to registration
+            # No session — send back to registration
             return request.redirect('/pharmacy/register')
 
         application = request.env[
@@ -126,7 +126,7 @@ class OtkPharmaOnboardingController(http.Controller):
             request.session.pop('otk_pharma_application_id', None)
             return request.redirect('/pharmacy/register')
 
-        # Already signed - go to pending page
+        # Already signed — go to pending page
         if application.contract_signed:
             return request.redirect('/pharmacy/pending')
 
@@ -260,9 +260,9 @@ class OtkPharmaOnboardingController(http.Controller):
             })
         except Exception as e:
             _logger.warning("Contract PDF generation failed: %s", str(e))
-            # Non-blocking - application still submitted even if PDF fails
+            # Non-blocking — application still submitted even if PDF fails
 
-        # Clear session - no longer needed
+        # Clear session — no longer needed
         request.session.pop('otk_pharma_application_id', None)
 
         # Redirect to pending confirmation page
@@ -274,7 +274,7 @@ class OtkPharmaOnboardingController(http.Controller):
     def pharmacy_pending(self, **kwargs):
         """
         Thank you / pending review page shown after contract signing.
-        No session required - anyone who lands here sees the message.
+        No session required — anyone who lands here sees the message.
         """
         return request.render(
             'otk_pharma_onboarding.portal_pharmacy_pending', {}

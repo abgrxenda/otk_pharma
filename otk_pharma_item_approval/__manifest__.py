@@ -29,9 +29,6 @@
         'views/portal_templates.xml',
         'views/portal_prescription_templates.xml',
     ],
-    'images': [
-        'static/description/pharma-approval.png',
-    ],
     'installable': True,
     'application': False,
     'auto_install': False,

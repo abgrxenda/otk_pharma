@@ -43,7 +43,7 @@ class SaleOrder(models.Model):
     def _compute_kit_component_data(self):
         """
         Compute kit component data for portal display.
-        Reads directly from BOM definitions - no component sale order lines needed.
+        Reads directly from BOM definitions — no component sale order lines needed.
         Returns a list of dicts with component info and stock levels.
         """
         for order in self:
@@ -175,7 +175,7 @@ class SaleOrder(models.Model):
 
     def _explode_kit_lines(self, kit_lines):
         """
-        Mark kit lines - no component sale order lines are created.
+        Mark kit lines — no component sale order lines are created.
         Stock moves for components are created separately via _create_kit_component_moves.
         """
         self.ensure_one()

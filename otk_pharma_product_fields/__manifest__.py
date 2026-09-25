@@ -27,9 +27,6 @@
         'security/ir.model.access.csv',
         'views/product_template_views.xml',
     ],
-    'images': [
-        'static/description/pharma-product-tabs.png',
-    ],
     'installable': True,
     'application': False,
     'auto_install': False,
